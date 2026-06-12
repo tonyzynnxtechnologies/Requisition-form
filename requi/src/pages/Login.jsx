@@ -11,21 +11,6 @@ const Login = ({ onLoginSuccess }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
-    try {
-        await getCSRFToken();
-
-        const response = await login({
-            email,
-            password,
-        });
-
-        // login success
-    } catch (error) {
-        console.error(error);
-    }
-};
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 

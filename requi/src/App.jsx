@@ -4,13 +4,19 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Users from "./pages/admin/Users";
 import Departments from "./pages/admin/Departments";
+import Clubs from "./pages/admin/Clubs";
+import AllRequisitions from "./pages/admin/AllRequisitions";
 
 import StaffDashboard from "./pages/staff/StaffDashboard";
+import CreateRequisition from "./pages/staff/CreateRequisition";
+import MyRequisitions from "./pages/staff/MyRequisitions";
 
-import {
-  logout,
-  getCurrentUser,
-} from "./services/api";
+import HodDashboard from "./pages/hod/HodDashboard";
+import EdDashboard from "./pages/ed/EdDashboard";
+
+import RequisitionDetail from "./pages/shared/RequisitionDetail";
+
+import { logout, getCurrentUser } from "./services/api";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -19,13 +25,12 @@ function App() {
   const [activePage, setActivePage] = useState(
     localStorage.getItem("activePage") || "Dashboard"
   );
+  const [selectedRequisitionId, setSelectedRequisitionId] = useState(null);
 
   useEffect(() => {
     const checkSession = async () => {
       try {
         const data = await getCurrentUser();
-
-
         if (data.user) {
           setCurrentUser(data.user);
         }
@@ -35,135 +40,131 @@ function App() {
         setLoading(false);
       }
     };
-
     checkSession();
-
   }, []);
 
   const handleLoginSuccess = (user) => {
     setCurrentUser(user);
+    setActivePage("Dashboard");
   };
 
   const handleLogout = async () => {
     try {
       await logout();
-
       localStorage.removeItem("activePage");
-
       setCurrentUser(null);
       setActivePage("Dashboard");
+      setSelectedRequisitionId(null);
     } catch (error) {
       console.error("Logout Error:", error);
     }
-
   };
 
-  const handleNavigate = (page) => {
+  const handleNavigate = (page, id = null) => {
     if (page === "Logout") {
       handleLogout();
       return;
     }
-
-
     setActivePage(page);
     localStorage.setItem("activePage", page);
+    setSelectedRequisitionId(id);
+  };
 
-
+  const handleViewRequisition = (id) => {
+    setSelectedRequisitionId(id);
+    setActivePage("RequisitionDetail");
+    localStorage.setItem("activePage", "RequisitionDetail");
   };
 
   // Loading Screen
   if (loading) {
     return (
-      <div
-        style={{
-          height: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          fontSize: "18px",
-        }}
-      >
-        Loading... </div>
+      <div style={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        fontSize: "16px",
+        color: "#6b7280",
+        fontFamily: "Inter, sans-serif",
+        backgroundColor: "#f5f6fa",
+      }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{
+            width: "40px", height: "40px", border: "3px solid #e5e7eb",
+            borderTop: "3px solid #16a34a", borderRadius: "50%",
+            animation: "spin 0.8s linear infinite", margin: "0 auto 16px",
+          }} />
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          Loading...
+        </div>
+      </div>
     );
   }
 
   // Login Screen
   if (!currentUser) {
-    return (<Login
-      onLoginSuccess={handleLoginSuccess}
-    />
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  // Shared page: Requisition Detail (all roles)
+  if (activePage === "RequisitionDetail" && selectedRequisitionId) {
+    return (
+      <RequisitionDetail
+        requisitionId={selectedRequisitionId}
+        currentUser={currentUser}
+        onNavigate={handleNavigate}
+        onLogout={handleLogout}
+      />
     );
   }
 
-  // Admin Pages
+  // ─── Admin Pages ────────────────────────────────────────────────────────
   if (currentUser.role === "admin") {
     switch (activePage) {
       case "Users":
-        return (
-          <Users
-            currentUser={currentUser}
-            onNavigate={handleNavigate}
-            onLogout={handleLogout}
-          />
-        );
-
+        return <Users currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
       case "Departments":
-        return (
-          <Departments
-            currentUser={currentUser}
-            onNavigate={handleNavigate}
-            onLogout={handleLogout}
-          />
-        );
-
+        return <Departments currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
+      case "Clubs":
+        return <Clubs currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
+      case "AllRequisitions":
+        return <AllRequisitions currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
       case "Dashboard":
       default:
-        return (
-          <AdminDashboard
-            currentUser={currentUser}
-            onLogout={handleLogout}
-            onNavigate={handleNavigate}
-            activePage={activePage}
-          />
-        );
+        return <AdminDashboard currentUser={currentUser} onLogout={handleLogout} onNavigate={handleNavigate} activePage={activePage} onViewRequisition={handleViewRequisition} />;
     }
   }
 
-  // Staff Dashboard
+  // ─── Staff Pages ────────────────────────────────────────────────────────
   if (currentUser.role === "staff") {
-    return (<StaffDashboard
-      currentUser={currentUser}
-      onNavigate={handleNavigate}
-      onLogout={handleLogout}
-    />
-    );
+    switch (activePage) {
+      case "CreateRequisition":
+        return <CreateRequisition currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} editId={selectedRequisitionId} />;
+      case "MyRequisitions":
+        return <MyRequisitions currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
+      case "Dashboard":
+      default:
+        return <StaffDashboard currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
+    }
   }
 
-  // HOD Dashboard
+  // ─── HOD Pages ──────────────────────────────────────────────────────────
   if (currentUser.role === "hod") {
-    return (
-      <div style={{ padding: "30px" }}> <h1>HOD Dashboard</h1>
-
-        ```
-        <button onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
-    );
-
+    switch (activePage) {
+      case "Dashboard":
+      default:
+        return <HodDashboard currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
+    }
   }
 
-  // ED Dashboard
+  // ─── ED Pages ───────────────────────────────────────────────────────────
   if (currentUser.role === "ed") {
-    return (
-      <div style={{ padding: "30px" }}> <h1>ED Dashboard</h1>
-
-        <button onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
-    );
-
+    switch (activePage) {
+      case "Dashboard":
+      default:
+        return <EdDashboard currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
+    }
   }
 
   return <div>Invalid Role</div>;
