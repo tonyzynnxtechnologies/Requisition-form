@@ -6,6 +6,7 @@ import Users from "./pages/admin/Users";
 import Departments from "./pages/admin/Departments";
 import Clubs from "./pages/admin/Clubs";
 import AllRequisitions from "./pages/admin/AllRequisitions";
+import Settings from "./pages/admin/Settings";
 
 import StaffDashboard from "./pages/staff/StaffDashboard";
 import CreateRequisition from "./pages/staff/CreateRequisition";
@@ -130,6 +131,8 @@ function App() {
         return <Clubs currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
       case "AllRequisitions":
         return <AllRequisitions currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
+      case "Settings":
+        return <Settings currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
       case "Dashboard":
       default:
         return <AdminDashboard currentUser={currentUser} onLogout={handleLogout} onNavigate={handleNavigate} activePage={activePage} onViewRequisition={handleViewRequisition} />;

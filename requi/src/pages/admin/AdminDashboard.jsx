@@ -14,7 +14,8 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (showLoading = true) => {
+      if (showLoading) setLoading(true);
       try {
         const dashboardStats = await getDashboardStats();
         const data = dashboardStats?.data || dashboardStats || {};
@@ -42,10 +43,14 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
       } catch (err) {
         console.error('Error fetching dashboard stats', err);
       } finally {
-        setLoading(false);
+        if (showLoading) setLoading(false);
       }
     };
-    fetchData();
+    fetchData(true);
+    const interval = setInterval(() => {
+      fetchData(false);
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const getStatusConfig = (status) => {

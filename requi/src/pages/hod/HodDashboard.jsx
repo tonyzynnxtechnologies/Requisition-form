@@ -12,22 +12,25 @@ const HodDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) 
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
 
-  const loadRequisitions = async () => {
-    setLoading(true);
+  const loadRequisitions = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
       const data = await getRequisitions();
       const reqs = Array.isArray(data) ? data : (data?.data || []);
       setRequisitions(reqs);
-      setFiltered(reqs);
     } catch (err) {
       console.error('Failed to load departmental requisitions', err);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadRequisitions();
+    loadRequisitions(true);
+    const interval = setInterval(() => {
+      loadRequisitions(false);
+    }, 5000);
+    return () => clearInterval(interval);
   }, [currentUser]);
 
   useEffect(() => {

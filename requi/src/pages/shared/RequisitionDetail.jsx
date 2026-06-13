@@ -22,24 +22,30 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
 
-  const loadRequisition = async () => {
-    setLoading(true);
+  const loadRequisition = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
       const res = await getRequisitionDetail(requisitionId);
       setRequisition(res.data);
     } catch (err) {
       console.error(err);
-      setError('Failed to load requisition details.');
+      if (showLoading) setError('Failed to load requisition details.');
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
   useEffect(() => {
     if (requisitionId) {
-      loadRequisition();
+      loadRequisition(true);
+      const interval = setInterval(() => {
+        if (!submittingAction && !uploading) {
+          loadRequisition(false);
+        }
+      }, 5000);
+      return () => clearInterval(interval);
     }
-  }, [requisitionId]);
+  }, [requisitionId, submittingAction, uploading]);
 
   const handleAction = async (actionType) => {
     setError('');

@@ -195,4 +195,17 @@ export const getRequisitionHistory = async (id) => {
   return response.data;
 };
 
+// ─── Settings ────────────────────────────────────────────────────────────────
+
+export const getSettings = async () => {
+  const response = await api.get("/settings/");
+  return response.data;
+};
+
+export const updateSettings = async (data) => {
+  await getCSRFToken();
+  const response = await api.post("/settings/", data);
+  return response.data;
+};
+
 export default api;

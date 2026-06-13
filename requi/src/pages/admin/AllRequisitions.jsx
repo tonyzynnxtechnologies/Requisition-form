@@ -21,8 +21,8 @@ const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition 
   const [deptFilter, setDeptFilter] = useState('All');
 
   // Load requisitions & calculate stats
-  const loadRegistryData = async () => {
-    setLoading(true);
+  const loadRegistryData = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
       const [reqsData, dashboardStats, deptsData, clubsData] = await Promise.all([
         getRequisitions(),
@@ -33,7 +33,6 @@ const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition 
 
       const reqs = reqsData?.data || reqsData || [];
       setAllRequisitions(reqs);
-      setFilteredRequisitions(reqs);
       setDepartments(deptsData || []);
       setClubs(clubsData || []);
 
@@ -50,13 +49,21 @@ const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition 
     } catch (err) {
       console.error('Error loading registry data', err);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadRegistryData();
+    loadRegistryData(true);
+    const interval = setInterval(() => {
+      loadRegistryData(false);
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    handleApplyFilters();
+  }, [allRequisitions, statusFilter, typeFilter, deptFilter]);
 
   // Filter application handler
   const handleApplyFilters = () => {

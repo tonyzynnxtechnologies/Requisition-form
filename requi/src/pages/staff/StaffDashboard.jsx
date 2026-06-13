@@ -11,7 +11,8 @@ const UserDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout })
   });
   const [loading, setLoading] = useState(true);
 
-  const loadData = async () => {
+  const loadData = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
       const data = await getRequisitions();
       const userReqs = Array.isArray(data) ? data : (data?.data || []);
@@ -25,12 +26,16 @@ const UserDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout })
     } catch (err) {
       console.error('Error loading user dashboard data', err);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadData();
+    loadData(true);
+    const interval = setInterval(() => {
+      loadData(false);
+    }, 5000);
+    return () => clearInterval(interval);
   }, [currentUser]);
 
   const getGreeting = () => {

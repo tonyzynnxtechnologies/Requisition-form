@@ -10,22 +10,25 @@ const MyRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition }
   const [typeFilter, setTypeFilter] = useState('all');
   const [loading, setLoading] = useState(true);
 
-  const loadRequisitions = async () => {
-    setLoading(true);
+  const loadRequisitions = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
       const data = await getRequisitions();
       const reqs = Array.isArray(data) ? data : (data?.data || []);
       setRequisitions(reqs);
-      setFiltered(reqs);
     } catch (err) {
       console.error(err);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadRequisitions();
+    loadRequisitions(true);
+    const interval = setInterval(() => {
+      loadRequisitions(false);
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {

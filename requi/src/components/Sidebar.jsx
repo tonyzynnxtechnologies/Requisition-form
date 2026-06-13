@@ -9,6 +9,7 @@ const Sidebar = ({ activePage, onNavigate, currentUser }) => {
     { id: 'Departments', label: 'Departments', icon: '🏢' },
     { id: 'Clubs', label: 'Clubs', icon: '🎭' },
     { id: 'AllRequisitions', label: 'All Requisitions', icon: '📋' },
+    { id: 'Settings', label: 'Settings', icon: '⚙️' },
   ];
 
   const hodMenu = [
