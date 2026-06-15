@@ -11,9 +11,18 @@ import Settings from "./pages/admin/Settings";
 import StaffDashboard from "./pages/staff/StaffDashboard";
 import CreateRequisition from "./pages/staff/CreateRequisition";
 import MyRequisitions from "./pages/staff/MyRequisitions";
+import UserProfile from "./pages/staff/UserProfile";
 
 import HodDashboard from "./pages/hod/HodDashboard";
+import HodRequisitions from "./pages/hod/HoDRequisition";
+import HodStaff from "./pages/hod/HoDStaff";
+import HodProfile from "./pages/hod/HodProfile";
 import EdDashboard from "./pages/ed/EdDashboard";
+import EdRequisitions from "./pages/ed/EdRequisitions";
+import EdUsers from "./pages/ed/EdUsers";
+import EdDepartments from "./pages/ed/EdDepartments";
+import EdClubs from "./pages/ed/EdClubs";
+import EdProfile from "./pages/ed/EdProfile";
 
 import RequisitionDetail from "./pages/shared/RequisitionDetail";
 
@@ -146,6 +155,9 @@ function App() {
         return <CreateRequisition currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} editId={selectedRequisitionId} />;
       case "MyRequisitions":
         return <MyRequisitions currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
+      case "UserProfile":
+      case "User_Profile":
+        return <UserProfile currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
       case "Dashboard":
       default:
         return <StaffDashboard currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
@@ -155,6 +167,15 @@ function App() {
   // ─── HOD Pages ──────────────────────────────────────────────────────────
   if (currentUser.role === "hod") {
     switch (activePage) {
+      case "HodRequisitions":
+      case "HOD_Requisitions":
+        return <HodRequisitions currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
+      case "HodStaff":
+      case "HOD_Staff":
+        return <HodStaff currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
+      case "HodProfile":
+      case "HOD_Profile":
+        return <HodProfile currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
       case "Dashboard":
       default:
         return <HodDashboard currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
@@ -164,6 +185,21 @@ function App() {
   // ─── ED Pages ───────────────────────────────────────────────────────────
   if (currentUser.role === "ed") {
     switch (activePage) {
+      case "EdRequisitions":
+      case "Ed_Requisitions":
+        return <EdRequisitions currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
+      case "EdUsers":
+      case "Ed_Users":
+        return <EdUsers currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
+      case "EdDepartments":
+      case "Ed_Departments":
+        return <EdDepartments currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
+      case "EdClubs":
+      case "Ed_Clubs":
+        return <EdClubs currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
+      case "EdProfile":
+      case "Ed_Profile":
+        return <EdProfile currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
       case "Dashboard":
       default:
         return <EdDashboard currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;

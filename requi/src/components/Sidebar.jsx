@@ -14,16 +14,25 @@ const Sidebar = ({ activePage, onNavigate, currentUser }) => {
 
   const hodMenu = [
     { id: 'Dashboard', label: 'Dashboard', icon: '📊' },
+    { id: 'HodRequisitions', label: 'Requisitions', icon: '📋' },
+    { id: 'HodStaff', label: 'Staff', icon: '👥' },
+    { id: 'HodProfile', label: 'Profile', icon: '👤' },
   ];
 
   const edMenu = [
     { id: 'Dashboard', label: 'Dashboard', icon: '📊' },
+    { id: 'EdRequisitions', label: 'Requisitions', icon: '📋' },
+    { id: 'EdUsers', label: 'Users', icon: '👥' },
+    { id: 'EdDepartments', label: 'Departments', icon: '🏢' },
+    { id: 'EdClubs', label: 'Clubs', icon: '🎭' },
+    { id: 'EdProfile', label: 'Profile', icon: '👤' },
   ];
 
   const staffMenu = [
     { id: 'Dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'CreateRequisition', label: 'New Requisition', icon: '✏️' },
     { id: 'MyRequisitions', label: 'My Requisitions', icon: '📄' },
+    { id: 'UserProfile', label: 'My Profile', icon: '👤' },
   ];
 
   const menuMap = { admin: adminMenu, hod: hodMenu, ed: edMenu, staff: staffMenu };

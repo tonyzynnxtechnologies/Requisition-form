@@ -207,8 +207,8 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
 
   const getBackRoute = () => {
     if (currentUser?.role === 'admin') return 'AllRequisitions';
-    if (currentUser?.role === 'hod') return 'DepartmentRequisitions';
-    if (currentUser?.role === 'ed') return 'ClubRequisitions';
+    if (currentUser?.role === 'hod') return 'Dashboard';
+    if (currentUser?.role === 'ed') return 'EdRequisitions';
     return 'MyRequisitions';
   };
 
