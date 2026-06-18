@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Requisition, RequisitionItem, RequisitionDocument, RequisitionAction
+from admin_panel.serializers import ClubNameOrIdField
 
 
 
@@ -133,6 +134,7 @@ class RequisitionDetailSerializer(serializers.ModelSerializer):
 
 class RequisitionWriteSerializer(serializers.ModelSerializer):
     items = RequisitionItemSerializer(many=True)
+    club = ClubNameOrIdField(required=False, allow_null=True)
 
     class Meta:
         model = Requisition

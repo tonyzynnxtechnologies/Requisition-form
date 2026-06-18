@@ -7,7 +7,6 @@ const Sidebar = ({ activePage, onNavigate, currentUser }) => {
     { id: 'Dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'Users', label: 'Users', icon: '👥' },
     { id: 'Departments', label: 'Departments', icon: '🏢' },
-    { id: 'Clubs', label: 'Clubs', icon: '🎭' },
     { id: 'AllRequisitions', label: 'All Requisitions', icon: '📋' },
     { id: 'Settings', label: 'Settings', icon: '⚙️' },
   ];
@@ -24,7 +23,6 @@ const Sidebar = ({ activePage, onNavigate, currentUser }) => {
     { id: 'EdRequisitions', label: 'Requisitions', icon: '📋' },
     { id: 'EdUsers', label: 'Users', icon: '👥' },
     { id: 'EdDepartments', label: 'Departments', icon: '🏢' },
-    { id: 'EdClubs', label: 'Clubs', icon: '🎭' },
     { id: 'EdProfile', label: 'Profile', icon: '👤' },
   ];
 

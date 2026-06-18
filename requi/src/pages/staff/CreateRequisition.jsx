@@ -65,7 +65,7 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
           setTargetAudience(req.target_audience || '');
           setResourcePersonDetails(req.resource_person_details || '');
           setDepartment(req.department || '');
-          setClub(req.club || '');
+          setClub(req.requisition_type === 'club' ? req.club_name : req.club || '');
           if (req.items && req.items.length > 0) {
             setItems(req.items.map(item => ({
               item_name: item.item_name,
@@ -144,7 +144,7 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
       target_audience: targetAudience.trim() || null,
       resource_person_details: resourcePersonDetails.trim() || null,
       department: requisitionType === 'department' ? parseInt(department) : null,
-      club: requisitionType === 'club' ? parseInt(club) : null,
+      club: requisitionType === 'club' ? club : null,
       items: items.map((item, idx) => ({
         sl_no: idx + 1,
         item_name: item.item_name.trim(),
@@ -354,14 +354,13 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
                 ) : (
                   <>
                     <label style={labelStyle}>Club *</label>
-                    <select 
+                    <input 
+                      type="text"
                       value={club} 
                       onChange={(e) => setClub(e.target.value)}
+                      placeholder="e.g. Fine Arts Club"
                       style={inputStyle}
-                    >
-                      <option value="">Select Club</option>
-                      {clubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
+                    />
                   </>
                 )}
               </div>

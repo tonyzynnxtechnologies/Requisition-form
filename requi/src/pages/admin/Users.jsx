@@ -140,7 +140,7 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
       email: user.email,
       role: user.role,
       department: user.department || '',
-      club: user.club || '',
+      club: user.club_name || '',
       is_active: user.is_active
     });
     setShowEditModal(true);
@@ -450,10 +450,7 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
 
                 <div style={{ marginBottom: '24px' }}>
                   <label style={labelStyle}>Club (optional)</label>
-                  <select value={club} onChange={(e) => setClub(e.target.value)} style={{ ...inputStyle, backgroundColor: 'white' }}>
-                    <option value="">None</option>
-                    {clubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
+                  <input type="text" value={club} onChange={(e) => setClub(e.target.value)} placeholder="e.g. Fine Arts Club" style={inputStyle} />
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
@@ -510,10 +507,7 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
 
                 <div style={{ marginBottom: '16px' }}>
                   <label style={labelStyle}>Club (optional)</label>
-                  <select value={editData.club} onChange={(e) => setEditData({...editData, club: e.target.value})} style={{ ...inputStyle, backgroundColor: 'white' }}>
-                    <option value="">None</option>
-                    {clubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
+                  <input type="text" value={editData.club} onChange={(e) => setEditData({...editData, club: e.target.value})} placeholder="e.g. Fine Arts Club" style={inputStyle} />
                 </div>
 
                 <div style={{ marginBottom: '24px' }}>

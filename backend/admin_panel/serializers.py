@@ -1,11 +1,34 @@
 from rest_framework import serializers
 from .models import User, Department, Club
 
+class ClubNameOrIdField(serializers.Field):
+    def to_internal_value(self, data):
+        if not data:
+            return None
+        if isinstance(data, int) or (isinstance(data, str) and data.isdigit()):
+            try:
+                return Club.objects.get(pk=int(data))
+            except Club.DoesNotExist:
+                raise serializers.ValidationError("Club does not exist.")
+        if isinstance(data, str):
+            name = data.strip()
+            if not name:
+                return None
+            club_obj, _ = Club.objects.get_or_create(name=name)
+            return club_obj
+        return None
+
+    def to_representation(self, value):
+        if not value:
+            return None
+        return value.id
+
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True,
         min_length=6
     )
+    club = ClubNameOrIdField(required=False, allow_null=True)
 
     class Meta:
         model = User
@@ -53,6 +76,8 @@ class LoginSerializer(serializers.Serializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
+    club = ClubNameOrIdField(required=False, allow_null=True)
+
     class Meta:
         model = User
         fields = [ 

@@ -14,6 +14,7 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [submittingAction, setSubmittingAction] = useState(false);
+  const [actionPending, setActionPending] = useState(null);
 
   // Form states for HOD / ED decisions
   const [comment, setComment] = useState('');
@@ -58,6 +59,7 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
     }
 
     setSubmittingAction(true);
+    setActionPending(actionType);
     try {
       await performRequisitionAction(requisitionId, actionType, comment.trim());
       setSuccess(`Action applied successfully.`);
@@ -68,6 +70,7 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
       setError(err.response?.data?.message || 'Failed to apply decision.');
     } finally {
       setSubmittingAction(false);
+      setActionPending(null);
     }
   };
 
@@ -75,6 +78,7 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
     setError('');
     setSuccess('');
     setSubmittingAction(true);
+    setActionPending('submit_draft');
     try {
       await submitRequisition(requisitionId);
       setSuccess('Requisition submitted successfully.');
@@ -84,6 +88,7 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
       setError('Failed to submit requisition.');
     } finally {
       setSubmittingAction(false);
+      setActionPending(null);
     }
   };
 
@@ -221,7 +226,7 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
 
       <div style={{ flex: 1, marginLeft: '240px', padding: '32px 40px' }} className="detail-container">
         
-        {/* Style injection for printing */}
+        {/* Style injection for printing and spinner */}
         <style dangerouslySetInnerHTML={{__html: `
           @media print {
             .no-print { display: none !important; }
@@ -231,6 +236,18 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
             .screen-layout { display: none !important; }
           }
           .print-layout { display: none; }
+          @keyframes spin { to { transform: rotate(360deg); } }
+          .btn-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+          }
         `}} />
 
         {/* SCREEN LAYOUT */}
@@ -483,25 +500,28 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
                         <button 
                           onClick={() => handleAction('approved_by_hod')} 
                           disabled={submittingAction}
-                          style={{ padding: '10px', backgroundColor: '#16a34a', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}
+                          style={{ padding: '10px', backgroundColor: '#16a34a', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: submittingAction ? 'not-allowed' : 'pointer', opacity: submittingAction ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         >
-                          Approve Request
+                          {actionPending === 'approved_by_hod' && <span className="btn-spinner" />}
+                          {actionPending === 'approved_by_hod' ? 'Approving...' : 'Approve Request'}
                         </button>
                       )}
                       <button 
                         onClick={() => handleAction('returned_by_hod')} 
                         disabled={submittingAction}
-                        style={{ padding: '10px', backgroundColor: '#d97706', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}
+                        style={{ padding: '10px', backgroundColor: '#d97706', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: submittingAction ? 'not-allowed' : 'pointer', opacity: submittingAction ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       >
-                        Return to Staff
+                        {actionPending === 'returned_by_hod' && <span className="btn-spinner" />}
+                        {actionPending === 'returned_by_hod' ? 'Returning...' : 'Return to Staff'}
                       </button>
                       {requisition.status === 'pending_hod' && (
                         <button 
                           onClick={() => handleAction('rejected_by_hod')} 
                           disabled={submittingAction}
-                          style={{ padding: '10px', backgroundColor: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}
+                          style={{ padding: '10px', backgroundColor: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: submittingAction ? 'not-allowed' : 'pointer', opacity: submittingAction ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         >
-                          Reject Request
+                          {actionPending === 'rejected_by_hod' && <span className="btn-spinner" />}
+                          {actionPending === 'rejected_by_hod' ? 'Rejecting...' : 'Reject Request'}
                         </button>
                       )}
                     </div>
@@ -523,23 +543,26 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
                       <button 
                         onClick={() => handleAction('approved_by_ed')} 
                         disabled={submittingAction}
-                        style={{ padding: '10px', backgroundColor: '#16a34a', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}
+                        style={{ padding: '10px', backgroundColor: '#16a34a', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: submittingAction ? 'not-allowed' : 'pointer', opacity: submittingAction ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       >
-                        Approve Requisition
+                        {actionPending === 'approved_by_ed' && <span className="btn-spinner" />}
+                        {actionPending === 'approved_by_ed' ? 'Approving...' : 'Approve Requisition'}
                       </button>
                       <button 
                         onClick={() => handleAction('returned_by_ed')} 
                         disabled={submittingAction}
-                        style={{ padding: '10px', backgroundColor: '#4f46e5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}
+                        style={{ padding: '10px', backgroundColor: '#4f46e5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: submittingAction ? 'not-allowed' : 'pointer', opacity: submittingAction ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       >
-                        {requisition.requisition_type === 'club' ? 'Return to Staff' : 'Return to HOD'}
+                        {actionPending === 'returned_by_ed' && <span className="btn-spinner" />}
+                        {actionPending === 'returned_by_ed' ? 'Returning...' : (requisition.requisition_type === 'club' ? 'Return to Staff' : 'Return to HOD')}
                       </button>
                       <button 
                         onClick={() => handleAction('rejected_by_ed')} 
                         disabled={submittingAction}
-                        style={{ padding: '10px', backgroundColor: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}
+                        style={{ padding: '10px', backgroundColor: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: submittingAction ? 'not-allowed' : 'pointer', opacity: submittingAction ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       >
-                        Reject Requisition
+                        {actionPending === 'rejected_by_ed' && <span className="btn-spinner" />}
+                        {actionPending === 'rejected_by_ed' ? 'Rejecting...' : 'Reject Requisition'}
                       </button>
                     </div>
                   )}
@@ -550,9 +573,10 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
                       <button 
                         onClick={handleSubmitDraft} 
                         disabled={submittingAction}
-                        style={{ padding: '11px', backgroundColor: '#16a34a', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: 'pointer' }}
+                        style={{ padding: '11px', backgroundColor: '#16a34a', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: submittingAction ? 'not-allowed' : 'pointer', opacity: submittingAction ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       >
-                        Submit Requisition
+                        {actionPending === 'submit_draft' && <span className="btn-spinner" />}
+                        {actionPending === 'submit_draft' ? 'Submitting...' : 'Submit Requisition'}
                       </button>
                       <button 
                         onClick={() => {
