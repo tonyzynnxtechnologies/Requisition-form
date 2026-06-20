@@ -22,7 +22,7 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
         const hodName = deptHods.length > 0 ? deptHods[0].name : 'TBD';
 
         // Count staff
-        const staffList = usersData.filter(u => u.department === dept.id);
+        const staffList = usersData.filter(u => u.role === 'staff' && u.department === dept.id);
         const staffCount = staffList.length;
 
         // Count active requisitions
@@ -48,7 +48,7 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
         const budgetStatus = totalSpent > 100000 ? 'UTILIZED' : 'ACTIVE';
 
         // Faculty & Support counts
-        const facultyCount = staffList.filter(u => u.role === 'staff' || u.role === 'hod').length;
+        const facultyCount = staffCount;
         const supportCount = Math.max(1, Math.round(facultyCount * 0.15));
 
         return {

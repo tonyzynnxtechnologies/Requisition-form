@@ -20,7 +20,6 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
 
   // Lookups
   const [departments, setDepartments] = useState([]);
-  const [clubs, setClubs] = useState([]);
 
   // Form state for adding user
   const [showAddModal, setShowAddModal] = useState(false);
@@ -29,8 +28,8 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
   const [password, setPassword] = useState('123456');
   const [role, setRole] = useState('staff');
   const [department, setDepartment] = useState('');
-  const [club, setClub] = useState('');
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
   // Edit User State
@@ -40,15 +39,13 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [userData, deptData, clubData] = await Promise.all([
+      const [userData, deptData] = await Promise.all([
         getUsers(),
-        getDepartments(),
-        getClubs()
+        getDepartments()
       ]);
       setUsers(userData);
       setFilteredUsers(userData);
       setDepartments(deptData);
-      setClubs(clubData);
     } catch (err) {
       console.error('Error loading data', err);
     } finally {
@@ -87,14 +84,21 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
   const handleAddUser = async (e) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
 
-    if (!name || !email) {
-      setError('Please fill in all required fields.');
-      return;
+    const newFieldErrors = {};
+    if (!name) {
+      newFieldErrors.name = 'Full name is required.';
+    }
+    if (!email) {
+      newFieldErrors.email = 'Email address is required.';
+    }
+    if (['staff', 'hod'].includes(role) && !department) {
+      newFieldErrors.department = 'Department is required for Staff and HOD roles.';
     }
 
-    if (['staff', 'hod'].includes(role) && !department) {
-      setError('Department is required for Staff and HOD roles.');
+    if (Object.keys(newFieldErrors).length > 0) {
+      setFieldErrors(newFieldErrors);
       return;
     }
 
@@ -106,8 +110,7 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
         name,
         email,
         role,
-        department: department || null,
-        club: club || null
+        department: department || null
       });
       
       // Reset form
@@ -116,7 +119,6 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
       setPassword('123456');
       setRole('staff');
       setDepartment('');
-      setClub('');
       setShowAddModal(false);
       
       // Reload list
@@ -124,7 +126,11 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
     } catch (err) {
       const errData = err.response?.data;
       if (errData?.errors) {
-        setError(Object.values(errData.errors).flat().join(', '));
+        const mappedErrors = {};
+        Object.entries(errData.errors).forEach(([field, messages]) => {
+          mappedErrors[field] = Array.isArray(messages) ? messages.join(' ') : messages;
+        });
+        setFieldErrors(mappedErrors);
       } else {
         setError('Failed to create user.');
       }
@@ -140,7 +146,6 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
       email: user.email,
       role: user.role,
       department: user.department || '',
-      club: user.club_name || '',
       is_active: user.is_active
     });
     setShowEditModal(true);
@@ -149,12 +154,21 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
   const handleSaveEditUser = async (e) => {
     e.preventDefault();
     setError('');
-    if (!editData.name || !editData.email) {
-      setError('Name and email are required.');
-      return;
+    setFieldErrors({});
+
+    const newFieldErrors = {};
+    if (!editData.name) {
+      newFieldErrors.name = 'Name is required.';
+    }
+    if (!editData.email) {
+      newFieldErrors.email = 'Email is required.';
     }
     if (['staff', 'hod'].includes(editData.role) && !editData.department) {
-      setError('Department is required for Staff and HOD roles.');
+      newFieldErrors.department = 'Department is required for Staff and HOD roles.';
+    }
+
+    if (Object.keys(newFieldErrors).length > 0) {
+      setFieldErrors(newFieldErrors);
       return;
     }
 
@@ -165,14 +179,22 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
         email: editData.email,
         role: editData.role,
         department: editData.department || null,
-        club: editData.club || null,
         is_active: editData.is_active
       });
       setShowEditModal(false);
       setEditData(null);
       await loadData();
     } catch (err) {
-      setError('Failed to update user.');
+      const errData = err.response?.data;
+      if (errData?.errors) {
+        const mappedErrors = {};
+        Object.entries(errData.errors).forEach(([field, messages]) => {
+          mappedErrors[field] = Array.isArray(messages) ? messages.join(' ') : messages;
+        });
+        setFieldErrors(mappedErrors);
+      } else {
+        setError('Failed to update user.');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -419,18 +441,27 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
                 <div style={{ marginBottom: '16px' }}>
                   <label style={labelStyle}>Full Name *</label>
                   <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Prof. Sunny Joseph" style={inputStyle} />
+                  {fieldErrors.name && (
+                    <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{fieldErrors.name}</div>
+                  )}
                 </div>
                 <div style={{ marginBottom: '16px' }}>
                   <label style={labelStyle}>Email Address *</label>
                   <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="e.g. sunny@naipunnya.edu" style={inputStyle} />
+                  {fieldErrors.email && (
+                    <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{fieldErrors.email}</div>
+                  )}
                 </div>
                 <div style={{ marginBottom: '16px' }}>
                   <label style={labelStyle}>Password</label>
                   <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min 6 characters (defaults to 123456)" style={inputStyle} />
+                  {fieldErrors.password && (
+                    <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{fieldErrors.password}</div>
+                  )}
                 </div>
                 <div style={{ marginBottom: '16px' }}>
                   <label style={labelStyle}>Role</label>
-                  <select value={role} onChange={(e) => { setRole(e.target.value); setDepartment(''); setClub(''); }} style={{ ...inputStyle, backgroundColor: 'white' }}>
+                  <select value={role} onChange={(e) => { setRole(e.target.value); setDepartment(''); }} style={{ ...inputStyle, backgroundColor: 'white' }}>
                     <option value="staff">Staff / Faculty</option>
                     <option value="hod">HOD</option>
                     <option value="ed">Executive Director</option>
@@ -445,15 +476,13 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
                       <option value="">Select Department</option>
                       {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                     </select>
+                    {fieldErrors.department && (
+                      <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{fieldErrors.department}</div>
+                    )}
                   </div>
                 )}
 
-                <div style={{ marginBottom: '24px' }}>
-                  <label style={labelStyle}>Club (optional)</label>
-                  <input type="text" value={club} onChange={(e) => setClub(e.target.value)} placeholder="e.g. Fine Arts Club" style={inputStyle} />
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
                   <button type="button" onClick={() => setShowAddModal(false)} style={{ padding: '8px 16px', border: '1px solid #d1d5db', backgroundColor: 'white', borderRadius: '6px', fontSize: '14px', cursor: 'pointer' }}>Cancel</button>
                   <button type="submit" disabled={submitting} style={{ padding: '8px 16px', border: 'none', backgroundColor: '#111827', color: 'white', borderRadius: '6px', fontSize: '14px', cursor: 'pointer', opacity: submitting ? 0.7 : 1 }}>
                     {submitting ? 'Saving...' : 'Save User'}
@@ -480,14 +509,20 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
                 <div style={{ marginBottom: '16px' }}>
                   <label style={labelStyle}>Full Name *</label>
                   <input type="text" value={editData.name} onChange={(e) => setEditData({...editData, name: e.target.value})} style={inputStyle} />
+                  {fieldErrors.name && (
+                    <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{fieldErrors.name}</div>
+                  )}
                 </div>
                 <div style={{ marginBottom: '16px' }}>
                   <label style={labelStyle}>Email Address *</label>
                   <input type="email" value={editData.email} onChange={(e) => setEditData({...editData, email: e.target.value})} style={inputStyle} />
+                  {fieldErrors.email && (
+                    <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{fieldErrors.email}</div>
+                  )}
                 </div>
                 <div style={{ marginBottom: '16px' }}>
                   <label style={labelStyle}>Role</label>
-                  <select value={editData.role} onChange={(e) => setEditData({...editData, role: e.target.value, department: '', club: ''})} style={{ ...inputStyle, backgroundColor: 'white' }}>
+                  <select value={editData.role} onChange={(e) => setEditData({...editData, role: e.target.value, department: ''})} style={{ ...inputStyle, backgroundColor: 'white' }}>
                     <option value="staff">Staff / Faculty</option>
                     <option value="hod">HOD</option>
                     <option value="ed">Executive Director</option>
@@ -502,13 +537,11 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
                       <option value="">Select Department</option>
                       {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                     </select>
+                    {fieldErrors.department && (
+                      <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{fieldErrors.department}</div>
+                    )}
                   </div>
                 )}
-
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={labelStyle}>Club (optional)</label>
-                  <input type="text" value={editData.club} onChange={(e) => setEditData({...editData, club: e.target.value})} placeholder="e.g. Fine Arts Club" style={inputStyle} />
-                </div>
 
                 <div style={{ marginBottom: '24px' }}>
                   <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>

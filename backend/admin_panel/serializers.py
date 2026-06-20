@@ -28,7 +28,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         write_only=True,
         min_length=6
     )
-    club = ClubNameOrIdField(required=False, allow_null=True)
 
     class Meta:
         model = User
@@ -40,7 +39,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             'email',
             'role',
             'profile_pic',
-            'club',
             'department',
             'is_active'
         ]
@@ -76,8 +74,6 @@ class LoginSerializer(serializers.Serializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    club = ClubNameOrIdField(required=False, allow_null=True)
-
     class Meta:
         model = User
         fields = [ 
@@ -85,7 +81,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'email', 
             'role', 
             'department', 
-            'club', 
             'profile_pic', 
             'is_active' 
         ]
@@ -98,7 +93,6 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
     departmant_name = serializers.CharField(source='department.name', read_only=True)
-    club_name = serializers.CharField(source='club.name', read_only=True)
 
     class Meta:
         model = User
@@ -109,8 +103,6 @@ class UserSerializer(serializers.ModelSerializer):
             'email', 
             'role', 
             'profile_pic', 
-            'club', 
-            'club_name', 
             'department', 
             'departmant_name', 
             'is_active', 
