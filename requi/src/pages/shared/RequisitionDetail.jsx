@@ -15,6 +15,7 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
   const [success, setSuccess] = useState('');
   const [submittingAction, setSubmittingAction] = useState(false);
   const [actionPending, setActionPending] = useState(null);
+  const [hodPriority, setHodPriority] = useState('medium');
 
   // Form states for HOD / ED decisions
   const [comment, setComment] = useState('');
@@ -28,6 +29,9 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
     try {
       const res = await getRequisitionDetail(requisitionId);
       setRequisition(res.data);
+      if (res.data.priority) {
+        setHodPriority(res.data.priority);
+      }
     } catch (err) {
       console.error(err);
       if (showLoading) setError('Failed to load requisition details.');
@@ -61,7 +65,8 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
     setSubmittingAction(true);
     setActionPending(actionType);
     try {
-      await performRequisitionAction(requisitionId, actionType, comment.trim());
+      const priorityToSend = actionType === 'approved_by_hod' ? hodPriority : null;
+      await performRequisitionAction(requisitionId, actionType, comment.trim(), priorityToSend);
       setSuccess(`Action applied successfully.`);
       setComment('');
       await loadRequisition();
@@ -496,6 +501,24 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
                           borderRadius: '8px', fontSize: '13px', fontFamily: 'inherit', boxSizing: 'border-box'
                         }}
                       />
+                      {requisition.status === 'pending_hod' && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          <label style={{ fontSize: '12px', fontWeight: '600', color: '#4b5563' }}>Set Priority Level *</label>
+                          <select 
+                            value={hodPriority} 
+                            onChange={(e) => setHodPriority(e.target.value)}
+                            style={{
+                              width: '100%', padding: '10px 12px', border: '1px solid #d1d5db',
+                              borderRadius: '8px', fontSize: '13px', fontFamily: 'inherit', boxSizing: 'border-box', backgroundColor: 'white'
+                            }}
+                          >
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                          </select>
+                        </div>
+                      )}
                       {requisition.status === 'pending_hod' && (
                         <button 
                           onClick={() => handleAction('approved_by_hod')} 

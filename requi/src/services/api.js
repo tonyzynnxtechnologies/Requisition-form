@@ -157,11 +157,12 @@ export const submitRequisition = async (id) => {
   return response.data;
 };
 
-export const performRequisitionAction = async (id, action, comment = "") => {
+export const performRequisitionAction = async (id, action, comment = "", priority = null) => {
   await getCSRFToken();
   const response = await api.post(`/requisitions/${id}/action/`, {
     action,
     comment,
+    priority,
   });
   return response.data;
 };
@@ -206,6 +207,32 @@ export const updateSettings = async (data) => {
   await getCSRFToken();
   const response = await api.post("/settings/", data);
   return response.data;
+};
+
+// ─── Profile Picture ──────────────────────────────────────────────────────────
+
+export const uploadProfilePic = async (file) => {
+  await getCSRFToken();
+  const formData = new FormData();
+  formData.append("profile_pic", file);
+  const response = await api.post("/profile-pic/", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+};
+
+export const deleteProfilePic = async () => {
+  await getCSRFToken();
+  const response = await api.delete("/profile-pic/");
+  return response.data;
+};
+
+export const getMediaUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
+  return `http://127.0.0.1:8000${path}`;
 };
 
 export default api;

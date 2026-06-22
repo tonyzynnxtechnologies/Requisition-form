@@ -318,3 +318,39 @@ class SystemSettingsView(APIView):
         for key, val in request.data.items():
             SystemSetting.objects.update_or_create(key=key, defaults={'value': str(val)})
         return Response({'status': 'success'})
+
+
+class ProfilePicUploadView(APIView):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return Response({"success": False, "message": "Unauthorized"}, status=401)
+        
+        file_obj = request.FILES.get('file') or request.FILES.get('profile_pic')
+        if not file_obj:
+            return Response({"success": False, "message": "No photo provided"}, status=400)
+        
+        user = request.user
+        user.profile_pic = file_obj
+        user.save()
+        
+        profile_pic_url = user.profile_pic.url
+        return Response({
+            "success": True, 
+            "message": "Profile picture updated successfully",
+            "profile_pic": profile_pic_url
+        })
+
+    def delete(self, request):
+        if not request.user.is_authenticated:
+            return Response({"success": False, "message": "Unauthorized"}, status=401)
+        
+        user = request.user
+        if user.profile_pic:
+            user.profile_pic.delete(save=False)
+            user.profile_pic = None
+            user.save()
+            
+        return Response({
+            "success": True, 
+            "message": "Profile picture removed successfully"
+        })

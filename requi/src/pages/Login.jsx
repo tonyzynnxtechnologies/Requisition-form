@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { login } from '../services/api';
-
+import { Lightbulb, Eye, EyeOff, Lock } from 'lucide-react';
 
 
 
@@ -101,7 +101,7 @@ const Login = ({ onLoginSuccess }) => {
                 style={{ width: '100%', boxSizing: 'border-box', padding: '12px 16px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', outline: 'none', transition: 'border-color 0.2s' }}
               />
               <span style={{ fontSize: '11px', color: '#9ca3af', marginTop: '4px', display: 'block' }}>
-                💡 Try: admin@naipunnya.edu, staff@naipunnya.edu, management@naipunnya.edu
+                <Lightbulb size={10} /> Try: admin@naipunnya.edu, staff@naipunnya.edu, management@naipunnya.edu
               </span>
             </div>
 
@@ -119,7 +119,7 @@ const Login = ({ onLoginSuccess }) => {
                   onClick={() => setShowPassword(!showPassword)}
                   style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#6b7280', userSelect: 'none' }}
                 >
-                  {showPassword ? '🙈' : '👁️'}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </span>
               </div>
             </div>
@@ -155,7 +155,7 @@ const Login = ({ onLoginSuccess }) => {
         </div>
 
         <div style={{ position: 'absolute', bottom: '24px', color: '#9ca3af', fontSize: '13px', display: 'flex', alignItems: 'center' }}>
-          <span style={{ marginRight: '6px' }}>🔒</span> Protected by 2FA · System v2.4.0
+          <span style={{ marginRight: '6px' }}><Lock size={20} /></span> Protected by 2FA · System v2.4.0
         </div>
       </div>
     </div>

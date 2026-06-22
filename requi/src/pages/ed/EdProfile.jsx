@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
-import { getRequisitions } from '../../services/api';
+import { getRequisitions, getMediaUrl, uploadProfilePic, deleteProfilePic } from '../../services/api';
 
-const EdProfile = ({ currentUser, onNavigate }) => {
+const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
   const [mfaEnabled, setMfaEnabled] = useState(true);
   const [authorizedCount, setAuthorizedCount] = useState(0);
   const [cumulativeBudget, setCumulativeBudget] = useState('₹42.8M');
   const [avgTat, setAvgTat] = useState('4.2h');
+  const [uploading, setUploading] = useState(false);
   
   // Notification states
   const [highValueEmail, setHighValueEmail] = useState(true);
@@ -15,6 +16,41 @@ const EdProfile = ({ currentUser, onNavigate }) => {
   const [urgentSms, setUrgentSms] = useState(false);
   const [weeklyEmail, setWeeklyEmail] = useState(true);
   const [weeklySms, setWeeklySms] = useState(false);
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const res = await uploadProfilePic(file);
+      if (res.success) {
+        if (onUpdateUser) onUpdateUser({ ...currentUser, profile_pic: res.profile_pic });
+        alert('Profile picture updated successfully!');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to upload profile picture.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemovePhoto = async () => {
+    if (!window.confirm('Are you sure you want to remove your profile picture?')) return;
+    setUploading(true);
+    try {
+      const res = await deleteProfilePic();
+      if (res.success) {
+        if (onUpdateUser) onUpdateUser({ ...currentUser, profile_pic: null });
+        alert('Profile picture removed successfully!');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to remove profile picture.');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchMetrics = async () => {
@@ -78,8 +114,67 @@ const EdProfile = ({ currentUser, onNavigate }) => {
           <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderTop: 'none', borderRadius: '0 0 12px 12px', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '-50px' }}>
               {/* Avatar circle */}
-              <div style={{ width: '96px', height: '96px', borderRadius: '12px', backgroundColor: '#064e3b', border: '4px solid white', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '32px', fontWeight: 'bold', color: 'white' }}>
-                {initials}
+              <div style={{ position: 'relative', width: '96px', height: '96px' }}>
+                <div style={{ 
+                  width: '96px', 
+                  height: '96px', 
+                  borderRadius: '12px', 
+                  backgroundColor: '#064e3b', 
+                  border: '4px solid white', 
+                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', 
+                  overflow: 'hidden', 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center', 
+                  fontSize: '32px', 
+                  fontWeight: 'bold', 
+                  color: 'white',
+                  position: 'relative'
+                }}>
+                  {uploading ? (
+                    <div style={{ fontSize: '16px' }}>⏳</div>
+                  ) : currentUser?.profile_pic ? (
+                    <img 
+                      src={getMediaUrl(currentUser.profile_pic)} 
+                      alt="Profile" 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                    />
+                  ) : (
+                    initials
+                  )}
+                </div>
+                
+                <label 
+                  htmlFor="profile-upload" 
+                  style={{ 
+                    position: 'absolute', 
+                    bottom: '-6px', 
+                    right: '-6px', 
+                    width: '28px', 
+                    height: '28px', 
+                    borderRadius: '50%', 
+                    backgroundColor: '#16a34a', 
+                    border: '2px solid white', 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    fontSize: '14px', 
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    zIndex: 2
+                  }}
+                  title="Upload Photo"
+                >
+                  📷
+                </label>
+                <input 
+                  id="profile-upload" 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleFileChange} 
+                  style={{ display: 'none' }} 
+                  disabled={uploading}
+                />
               </div>
               <div style={{ marginTop: '30px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -87,6 +182,25 @@ const EdProfile = ({ currentUser, onNavigate }) => {
                   <span style={{ fontSize: '10px', backgroundColor: '#e8f5e9', color: '#2e7d32', padding: '2px 8px', borderRadius: '12px', fontWeight: 'bold' }}>EXECUTIVE STATUS</span>
                 </div>
                 <div style={{ color: '#64748b', fontSize: '13.5px', marginTop: '2px' }}>Executive Director | Naipunnya Group of Institutions</div>
+                {currentUser?.profile_pic && (
+                  <button
+                    onClick={handleRemovePhoto}
+                    disabled={uploading}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#ef4444',
+                      fontSize: '12px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      marginTop: '6px',
+                      padding: 0,
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    Remove Photo
+                  </button>
+                )}
               </div>
             </div>
             

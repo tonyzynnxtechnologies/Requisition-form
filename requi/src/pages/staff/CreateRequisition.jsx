@@ -273,12 +273,17 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
           <div style={{ backgroundColor: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '28px' }}>
             <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: '0 0 20px 0' }}>Event & Requisition Details</h2>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: requisitionType === 'club' ? '1fr 1fr' : '1fr', gap: '20px', marginBottom: '20px' }}>
               <div>
                 <label style={labelStyle}>Requisition Type</label>
                 <select 
                   value={requisitionType} 
-                  onChange={(e) => setRequisitionType(e.target.value)}
+                  onChange={(e) => {
+                    setRequisitionType(e.target.value);
+                    if (e.target.value === 'department') {
+                      setPriority('medium');
+                    }
+                  }}
                   style={inputStyle}
                   disabled={!!editId}
                 >
@@ -286,19 +291,21 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
                   <option value="club">Club Request</option>
                 </select>
               </div>
-              <div>
-                <label style={labelStyle}>Priority Level</label>
-                <select 
-                  value={priority} 
-                  onChange={(e) => setPriority(e.target.value)}
-                  style={inputStyle}
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="urgent">Urgent</option>
-                </select>
-              </div>
+              {requisitionType === 'club' && (
+                <div>
+                  <label style={labelStyle}>Priority Level</label>
+                  <select 
+                    value={priority} 
+                    onChange={(e) => setPriority(e.target.value)}
+                    style={inputStyle}
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
+                </div>
+              )}
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>

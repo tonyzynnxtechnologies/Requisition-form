@@ -9,6 +9,7 @@ import {
   getDepartments,
   getClubs
 } from '../../services/api';
+import { UserPlus, Search, Pencil, KeyRound, Trash2 } from 'lucide-react';
 
 const Users = ({ currentUser, onNavigate, onLogout }) => {
   const [users, setUsers] = useState([]);
@@ -63,9 +64,9 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(u => 
-        (u.name || '').toLowerCase().includes(q) || 
-        (u.email || '').toLowerCase().includes(q) || 
+      result = result.filter(u =>
+        (u.name || '').toLowerCase().includes(q) ||
+        (u.email || '').toLowerCase().includes(q) ||
         (u.role || '').toLowerCase().includes(q)
       );
     }
@@ -112,7 +113,7 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
         role,
         department: department || null
       });
-      
+
       // Reset form
       setName('');
       setEmail('');
@@ -120,7 +121,7 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
       setRole('staff');
       setDepartment('');
       setShowAddModal(false);
-      
+
       // Reload list
       await loadData();
     } catch (err) {
@@ -265,11 +266,11 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
             <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>Directory of all institutional user accounts, roles, and permissions</p>
           </div>
           <div>
-            <button 
+            <button
               onClick={() => { setError(''); setShowAddModal(true); }}
               style={{ display: 'flex', alignItems: 'center', padding: '10px 16px', backgroundColor: '#111827', color: 'white', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '500', cursor: 'pointer', transition: 'opacity 0.2s' }}
             >
-              <span style={{ marginRight: '8px' }}>👤+</span> Add User
+              <span style={{ marginRight: '8px' }}><UserPlus size={20} /></span> Add User
             </button>
           </div>
         </div>
@@ -281,13 +282,13 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>{users.length}</div>
             <div style={{ fontSize: '13px', color: '#16a34a', fontWeight: '500' }}>Active directory counts</div>
           </div>
-          
+
           <div style={{ flex: 1, minWidth: '200px', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', letterSpacing: '0.5px', marginBottom: '12px' }}>ROLES REPRESENTED</div>
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>4</div>
             <div style={{ fontSize: '13px', color: '#6b7280', fontWeight: '500' }}>Admin, ED, HOD, Staff</div>
           </div>
-          
+
           <div style={{ flex: 1, minWidth: '200px', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', letterSpacing: '0.5px', marginBottom: '12px' }}>STAFF ACCOUNTS</div>
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>
@@ -300,16 +301,16 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
         {/* Filter Row */}
         <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ flex: 2, minWidth: '200px', position: 'relative' }}>
-            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}>🔍</span>
-            <input 
-              type="text" 
+            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}><Search size={20} color='black' /></span>
+            <input
+              type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by name, email, or role..." 
-              style={{ width: '100%', padding: '10px 10px 10px 36px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} 
+              placeholder="Search by name, email, or role..."
+              style={{ width: '100%', padding: '10px 10px 10px 36px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}
             />
           </div>
-          <select 
+          <select
             value={deptFilter}
             onChange={(e) => setDeptFilter(e.target.value)}
             style={{ flex: 1, minWidth: '150px', padding: '10px 16px', border: '1px solid #d1d5db', borderRadius: '8px', backgroundColor: 'white', color: '#374151', fontSize: '14px', outline: 'none' }}
@@ -317,7 +318,7 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
             <option value="All">All Departments</option>
             {departments.map(d => <option key={d.id} value={String(d.id)}>{d.name}</option>)}
           </select>
-          <select 
+          <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
             style={{ flex: 1, minWidth: '150px', padding: '10px 16px', border: '1px solid #d1d5db', borderRadius: '8px', backgroundColor: 'white', color: '#374151', fontSize: '14px', outline: 'none' }}
@@ -367,10 +368,10 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
                       </td>
                       <td style={{ padding: '16px 24px', color: '#374151' }}>{user.email}</td>
                       <td style={{ padding: '16px 24px', color: '#374151' }}>
-                        <span style={{ 
-                          padding: '4px 8px', 
-                          borderRadius: '6px', 
-                          fontSize: '12px', 
+                        <span style={{
+                          padding: '4px 8px',
+                          borderRadius: '6px',
+                          fontSize: '12px',
                           fontWeight: '600',
                           backgroundColor: user.role === 'admin' ? '#fee2e2' : user.role === 'ed' ? '#dcfce7' : user.role === 'hod' ? '#dbeafe' : '#f3f4f6',
                           color: user.role === 'admin' ? '#ef4444' : user.role === 'ed' ? '#16a34a' : user.role === 'hod' ? '#2563eb' : '#4b5563'
@@ -394,26 +395,26 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
                       </td>
                       <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                          <span 
+                          <span
                             onClick={() => handleEditUser(user)}
                             style={{ cursor: 'pointer', fontSize: '16px' }}
                             title="Edit User"
                           >
-                            ✏️
+                            <Pencil size={20} color='orange' />
                           </span>
-                          <span 
+                          <span
                             onClick={() => handleResetPassword(user.id)}
                             style={{ cursor: 'pointer', fontSize: '16px' }}
                             title="Reset Password"
                           >
-                            🔑
+                            <KeyRound size={20} color='gold' />
                           </span>
-                          <span 
+                          <span
                             onClick={() => handleDeleteUser(user.id)}
                             style={{ cursor: 'pointer', color: '#ef4444', fontSize: '16px' }}
                             title="Delete / Deactivate User"
                           >
-                            🚫
+                            <Trash2 size={20} />
                           </span>
                         </div>
                       </td>
@@ -430,7 +431,7 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
           <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
             <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '12px', width: '100%', maxWidth: '440px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', maxHeight: '90vh', overflowY: 'auto' }}>
               <h2 style={{ margin: '0 0 16px 0', fontSize: '20px', color: '#111827' }}>Add New User Account</h2>
-              
+
               {error && (
                 <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fee2e2', color: '#ef4444', padding: '10px', borderRadius: '6px', fontSize: '13px', marginBottom: '16px' }}>
                   {error}
@@ -468,7 +469,7 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
                     <option value="admin">Administrator</option>
                   </select>
                 </div>
-                
+
                 {['staff', 'hod'].includes(role) && (
                   <div style={{ marginBottom: '16px' }}>
                     <label style={labelStyle}>Department *</label>
@@ -498,7 +499,7 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
           <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
             <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '12px', width: '100%', maxWidth: '440px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', maxHeight: '90vh', overflowY: 'auto' }}>
               <h2 style={{ margin: '0 0 16px 0', fontSize: '20px', color: '#111827' }}>Edit User Account</h2>
-              
+
               {error && (
                 <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fee2e2', color: '#ef4444', padding: '10px', borderRadius: '6px', fontSize: '13px', marginBottom: '16px' }}>
                   {error}
@@ -508,32 +509,32 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
               <form onSubmit={handleSaveEditUser}>
                 <div style={{ marginBottom: '16px' }}>
                   <label style={labelStyle}>Full Name *</label>
-                  <input type="text" value={editData.name} onChange={(e) => setEditData({...editData, name: e.target.value})} style={inputStyle} />
+                  <input type="text" value={editData.name} onChange={(e) => setEditData({ ...editData, name: e.target.value })} style={inputStyle} />
                   {fieldErrors.name && (
                     <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{fieldErrors.name}</div>
                   )}
                 </div>
                 <div style={{ marginBottom: '16px' }}>
                   <label style={labelStyle}>Email Address *</label>
-                  <input type="email" value={editData.email} onChange={(e) => setEditData({...editData, email: e.target.value})} style={inputStyle} />
+                  <input type="email" value={editData.email} onChange={(e) => setEditData({ ...editData, email: e.target.value })} style={inputStyle} />
                   {fieldErrors.email && (
                     <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>{fieldErrors.email}</div>
                   )}
                 </div>
                 <div style={{ marginBottom: '16px' }}>
                   <label style={labelStyle}>Role</label>
-                  <select value={editData.role} onChange={(e) => setEditData({...editData, role: e.target.value, department: ''})} style={{ ...inputStyle, backgroundColor: 'white' }}>
+                  <select value={editData.role} onChange={(e) => setEditData({ ...editData, role: e.target.value, department: '' })} style={{ ...inputStyle, backgroundColor: 'white' }}>
                     <option value="staff">Staff / Faculty</option>
                     <option value="hod">HOD</option>
                     <option value="ed">Executive Director</option>
                     <option value="admin">Administrator</option>
                   </select>
                 </div>
-                
+
                 {['staff', 'hod'].includes(editData.role) && (
                   <div style={{ marginBottom: '16px' }}>
                     <label style={labelStyle}>Department *</label>
-                    <select value={editData.department} onChange={(e) => setEditData({...editData, department: e.target.value})} style={{ ...inputStyle, backgroundColor: 'white' }}>
+                    <select value={editData.department} onChange={(e) => setEditData({ ...editData, department: e.target.value })} style={{ ...inputStyle, backgroundColor: 'white' }}>
                       <option value="">Select Department</option>
                       {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                     </select>
@@ -545,7 +546,7 @@ const Users = ({ currentUser, onNavigate, onLogout }) => {
 
                 <div style={{ marginBottom: '24px' }}>
                   <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <input type="checkbox" checked={editData.is_active} onChange={(e) => setEditData({...editData, is_active: e.target.checked})} style={{ accentColor: '#16a34a' }} />
+                    <input type="checkbox" checked={editData.is_active} onChange={(e) => setEditData({ ...editData, is_active: e.target.checked })} style={{ accentColor: '#16a34a' }} />
                     Active Account
                   </label>
                 </div>

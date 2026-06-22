@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getRequisitions } from '../../services/api';
+import { Building2, Hourglass, Search, SquareCheckBig, SquareX } from 'lucide-react';
 
 const HodDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) => {
   const [requisitions, setRequisitions] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Filters
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -108,10 +109,10 @@ const HodDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) 
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
           {[
-            { label: 'TOTAL REQUESTS', value: stats.total, color: '#111827', icon: '🏢' },
-            { label: 'PENDING ACTION', value: stats.pending, color: '#d97706', icon: '⏳' },
-            { label: 'APPROVED', value: stats.approved, color: '#16a34a', icon: '✅' },
-            { label: 'REJECTED', value: stats.rejected, color: '#dc2626', icon: '❌' },
+            { label: 'TOTAL REQUESTS', value: stats.total, icon: <Building2 size={30} color='#111827' /> },
+            { label: 'PENDING ACTION', value: stats.pending, icon: <Hourglass size={30} color='#d97706' /> },
+            { label: 'APPROVED', value: stats.approved, icon: <SquareCheckBig size={30} color='#16a34a' /> },
+            { label: 'REJECTED', value: stats.rejected, icon: <SquareX size={30} color='#dc2626' /> },
           ].map((s, i) => (
             <div key={i} style={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
@@ -126,18 +127,18 @@ const HodDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) 
         {/* Filters */}
         <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
           <div style={{ flex: 2, minWidth: '200px', position: 'relative' }}>
-            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}>🔍</span>
-            <input 
-              type="text" 
-              value={search} 
-              onChange={(e) => setSearch(e.target.value)} 
-              placeholder="Search by programme or submitter..." 
-              style={{ ...inputStyle, paddingLeft: '36px' }} 
+            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}><Search size={20} color='black' /></span>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by programme or submitter..."
+              style={{ ...inputStyle, paddingLeft: '36px' }}
             />
           </div>
-          <select 
-            value={statusFilter} 
-            onChange={(e) => setStatusFilter(e.target.value)} 
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
             style={{ ...inputStyle, flex: 1, minWidth: '140px', backgroundColor: 'white' }}
           >
             <option value="all">All Statuses</option>
@@ -148,9 +149,9 @@ const HodDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) 
             <option value="returned_to_staff">Returned to Staff</option>
             <option value="returned_to_hod">Returned to HOD</option>
           </select>
-          <select 
-            value={priorityFilter} 
-            onChange={(e) => setPriorityFilter(e.target.value)} 
+          <select
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value)}
             style={{ ...inputStyle, flex: 1, minWidth: '140px', backgroundColor: 'white' }}
           >
             <option value="all">All Priorities</option>

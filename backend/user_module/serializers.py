@@ -208,13 +208,24 @@ class RequisitionActionWriteSerializer(serializers.Serializer):
     ]
     action = serializers.ChoiceField(choices=ACTION_CHOICES)
     comment = serializers.CharField(required=False, allow_blank=True, default='')
+    priority = serializers.ChoiceField(
+        choices=[('low', 'Low'), ('medium', 'Medium'), ('high', 'High'), ('urgent', 'Urgent')],
+        required=False,
+        allow_null=True,
+        allow_blank=True
+    )
  
     def validate(self, data):
         action = data.get('action')
         comment = data.get('comment', '')
+        priority = data.get('priority')
         
         if 'returned' in action and not comment.strip():
             raise serializers.ValidationError(
                 {'comment': 'A comment is required when returning a requisition.'}
+            )
+        if action == 'approved_by_hod' and not priority:
+            raise serializers.ValidationError(
+                {'priority': 'Priority level is required when HOD approves.'}
             )
         return data

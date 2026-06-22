@@ -1,10 +1,47 @@
 import React, { useState } from 'react';
 import Sidebar from '../../components/Sidebar';
+import { getMediaUrl, uploadProfilePic, deleteProfilePic } from '../../services/api';
 
-const HodProfile = ({ currentUser, onNavigate }) => {
+const HodProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
   const [emailAlerts, setEmailAlerts] = useState(true);
   const [approvalDigest, setApprovalDigest] = useState(true);
   const [budgetAlerts, setBudgetAlerts] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const res = await uploadProfilePic(file);
+      if (res.success) {
+        if (onUpdateUser) onUpdateUser({ ...currentUser, profile_pic: res.profile_pic });
+        alert('Profile picture updated successfully!');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to upload profile picture.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemovePhoto = async () => {
+    if (!window.confirm('Are you sure you want to remove your profile picture?')) return;
+    setUploading(true);
+    try {
+      const res = await deleteProfilePic();
+      if (res.success) {
+        if (onUpdateUser) onUpdateUser({ ...currentUser, profile_pic: null });
+        alert('Profile picture removed successfully!');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to remove profile picture.');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleEditProfile = () => {
     alert('HOD Profile editor is in review. Changes are currently disabled.');
@@ -27,8 +64,21 @@ const HodProfile = ({ currentUser, onNavigate }) => {
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ fontSize: '14px', color: '#6b7280', fontWeight: '500' }}>{currentUser?.name || 'Dr. Sarah Jacob'}</span>
-            <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#e5e7eb', color: '#111827', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '14px', fontWeight: 'bold' }}>
-              {initials}
+            <div style={{
+              width: '32px', height: '32px', borderRadius: '50%',
+              backgroundColor: '#e5e7eb', color: '#111827', display: 'flex',
+              justifyContent: 'center', alignItems: 'center', fontSize: '14px',
+              fontWeight: 'bold', overflow: 'hidden'
+            }}>
+              {currentUser?.profile_pic ? (
+                <img 
+                  src={getMediaUrl(currentUser.profile_pic)} 
+                  alt="Profile" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
+              ) : (
+                initials
+              )}
             </div>
           </div>
         </div>
@@ -56,10 +106,87 @@ const HodProfile = ({ currentUser, onNavigate }) => {
             <div style={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '32px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '80px', backgroundColor: '#f3f4f6' }}></div>
               
-              <div style={{ width: '96px', height: '96px', borderRadius: '50%', backgroundColor: '#111827', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '32px', fontWeight: 'bold', margin: '0 auto 16px auto', position: 'relative', zIndex: 1, border: '4px solid white', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-                {initials}
-                <div style={{ position: 'absolute', bottom: '0', right: '0', width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#16a34a', border: '3px solid white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '12px' }}>✓</div>
+              <div style={{ position: 'relative', width: '96px', height: '96px', margin: '0 auto 16px auto', zIndex: 1 }}>
+                <div style={{ 
+                  width: '96px', 
+                  height: '96px', 
+                  borderRadius: '50%', 
+                  backgroundColor: '#111827', 
+                  color: 'white', 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center', 
+                  fontSize: '32px', 
+                  fontWeight: 'bold', 
+                  border: '4px solid white', 
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  overflow: 'hidden',
+                  position: 'relative'
+                }}>
+                  {uploading ? (
+                    <div style={{ fontSize: '16px' }}>⏳</div>
+                  ) : currentUser?.profile_pic ? (
+                    <img 
+                      src={getMediaUrl(currentUser.profile_pic)} 
+                      alt="Profile" 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                    />
+                  ) : (
+                    initials
+                  )}
+                </div>
+                
+                <label 
+                  htmlFor="profile-upload" 
+                  style={{ 
+                    position: 'absolute', 
+                    bottom: '0', 
+                    right: '0', 
+                    width: '28px', 
+                    height: '28px', 
+                    borderRadius: '50%', 
+                    backgroundColor: '#16a34a', 
+                    border: '2px solid white', 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    fontSize: '14px', 
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}
+                  title="Upload Photo"
+                >
+                  📷
+                </label>
+                <input 
+                  id="profile-upload" 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleFileChange} 
+                  style={{ display: 'none' }} 
+                  disabled={uploading}
+                />
               </div>
+
+              {currentUser?.profile_pic && (
+                <button
+                  onClick={handleRemovePhoto}
+                  disabled={uploading}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#ef4444',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    marginTop: '-8px',
+                    marginBottom: '16px',
+                    textDecoration: 'underline'
+                  }}
+                >
+                  Remove Photo
+                </button>
+              )}
               
               <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827', margin: '0 0 4px 0' }}>{currentUser?.name || 'Dr. Sarah Jacob'}</h2>
               <div style={{ color: '#6b7280', fontSize: '15px', marginBottom: '16px' }}>HOD & Associate Professor</div>

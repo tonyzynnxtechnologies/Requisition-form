@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getUsers } from '../../services/api';
+import { Users } from 'lucide-react';
 
 const HodStaff = ({ currentUser, onNavigate }) => {
   const [staffList, setStaffList] = useState([]);
@@ -20,10 +21,10 @@ const HodStaff = ({ currentUser, onNavigate }) => {
       try {
         const response = await getUsers();
         const usersData = Array.isArray(response) ? response : (response?.data || []);
-        
+
         const hodDeptId = currentUser?.department;
         const hodClubId = currentUser?.club;
-        
+
         // Filter staff of the HOD's department/club
         const deptStaff = usersData.filter(u => {
           if (u.role !== 'staff') return false;
@@ -45,10 +46,10 @@ const HodStaff = ({ currentUser, onNavigate }) => {
 
         setStaffList(mapped);
         setFilteredStaff(mapped);
-        
+
         const activeCount = mapped.filter(s => s.status === 'Active').length;
         const leaveCount = mapped.filter(s => s.status === 'On Leave').length;
-        
+
         setStats({
           total: 38 + mapped.length, // Offset to match target total
           active: 34 + activeCount, // Offset to match target active
@@ -68,9 +69,9 @@ const HodStaff = ({ currentUser, onNavigate }) => {
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       setFilteredStaff(
-        staffList.filter(s => 
-          s.name.toLowerCase().includes(q) || 
-          s.email.toLowerCase().includes(q) || 
+        staffList.filter(s =>
+          s.name.toLowerCase().includes(q) ||
+          s.email.toLowerCase().includes(q) ||
           s.designation.toLowerCase().includes(q) ||
           s.employeeId.toLowerCase().includes(q)
         )
@@ -80,8 +81,8 @@ const HodStaff = ({ currentUser, onNavigate }) => {
     }
   }, [searchQuery, staffList]);
 
-  const initials = currentUser?.name 
-    ? currentUser.name.split(' ').map(n => n.charAt(0)).join('').toUpperCase() 
+  const initials = currentUser?.name
+    ? currentUser.name.split(' ').map(n => n.charAt(0)).join('').toUpperCase()
     : 'SJ';
 
   const hodDeptDisplay = currentUser?.departmant_name || currentUser?.department_name || currentUser?.club_name || 'DEPARTMENT';
@@ -119,7 +120,7 @@ const HodStaff = ({ currentUser, onNavigate }) => {
                 <span style={{ fontSize: '12px', color: '#16a34a', fontWeight: '500' }}>+2 this month</span>
               </div>
             </div>
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: '#eff6ff', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '18px' }}>👥</div>
+            <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: '#eff6ff', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '18px' }}><Users size={30} /></div>
           </div>
 
           <div style={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
@@ -149,19 +150,19 @@ const HodStaff = ({ currentUser, onNavigate }) => {
           {/* Search bar inside directory card */}
           <div style={{ padding: '20px 24px', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
             <span style={{ fontWeight: '600', fontSize: '16px', color: '#111827' }}>
-              Staff Members 
+              Staff Members
               <span style={{ backgroundColor: '#f3f4f6', color: '#4b5563', padding: '2px 8px', borderRadius: '10px', fontSize: '12px', marginLeft: '6px' }}>
                 {stats.total} Total
               </span>
             </span>
             <div style={{ position: 'relative', width: '250px' }}>
               <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}>🔍</span>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search staff..." 
-                style={{ width: '100%', padding: '8px 12px 8px 36px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '13px', outline: 'none' }} 
+                placeholder="Search staff..."
+                style={{ width: '100%', padding: '8px 12px 8px 36px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '13px', outline: 'none' }}
               />
             </div>
           </div>
@@ -201,22 +202,22 @@ const HodStaff = ({ currentUser, onNavigate }) => {
                       </td>
                       <td style={{ padding: '16px 24px', fontFamily: 'monospace', color: '#4b5563' }}>{staff.employeeId}</td>
                       <td style={{ padding: '16px 24px' }}>
-                        <span style={{ 
-                          display: 'inline-flex', 
-                          alignItems: 'center', 
-                          backgroundColor: staff.status === 'Active' ? '#dcfce7' : staff.status === 'On Leave' ? '#ffe8d6' : '#e0e7ff', 
-                          color: staff.status === 'Active' ? '#16a34a' : staff.status === 'On Leave' ? '#d97706' : '#4f46e5', 
-                          padding: '4px 12px', 
-                          borderRadius: '9999px', 
-                          fontSize: '11.5px', 
-                          fontWeight: '500' 
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          backgroundColor: staff.status === 'Active' ? '#dcfce7' : staff.status === 'On Leave' ? '#ffe8d6' : '#e0e7ff',
+                          color: staff.status === 'Active' ? '#16a34a' : staff.status === 'On Leave' ? '#d97706' : '#4f46e5',
+                          padding: '4px 12px',
+                          borderRadius: '9999px',
+                          fontSize: '11.5px',
+                          fontWeight: '500'
                         }}>
                           {staff.status}
                         </span>
                       </td>
                       <td style={{ padding: '16px 24px', color: '#4b5563' }}>{staff.lastActivity}</td>
                       <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                        <span 
+                        <span
                           onClick={() => alert(`Staff Name: ${staff.name}\nEmail: ${staff.email}\nEmployee ID: ${staff.employeeId}\nStatus: ${staff.status}`)}
                           style={{ color: '#9ca3af', fontSize: '18px', cursor: 'pointer' }}
                         >
@@ -242,7 +243,7 @@ const HodStaff = ({ currentUser, onNavigate }) => {
             </div>
           </div>
         </div>
-        
+
         <div style={{ padding: '32px 0 0 0', color: '#9ca3af', fontSize: '12px', display: 'flex', justifyContent: 'space-between' }}>
           <div>© 2026 Naipunnya Digital Requisition System. Institutional Grade.</div>
           <div style={{ display: 'flex', gap: '16px' }}>

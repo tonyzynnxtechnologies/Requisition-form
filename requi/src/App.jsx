@@ -140,6 +140,9 @@ function App() {
         return <Clubs currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
       case "AllRequisitions":
         return <AllRequisitions currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
+      case "UserProfile":
+      case "User_Profile":
+        return <UserProfile currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onUpdateUser={(u) => setCurrentUser(u)} />;
       case "Settings":
         return <Settings currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
       case "Dashboard":
@@ -157,7 +160,7 @@ function App() {
         return <MyRequisitions currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
       case "UserProfile":
       case "User_Profile":
-        return <UserProfile currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
+        return <UserProfile currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onUpdateUser={(u) => setCurrentUser(u)} />;
       case "Dashboard":
       default:
         return <StaffDashboard currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
@@ -175,7 +178,7 @@ function App() {
         return <HodStaff currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
       case "HodProfile":
       case "HOD_Profile":
-        return <HodProfile currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
+        return <HodProfile currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onUpdateUser={(u) => setCurrentUser(u)} />;
       case "Dashboard":
       default:
         return <HodDashboard currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
@@ -199,7 +202,7 @@ function App() {
         return <EdClubs currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
       case "EdProfile":
       case "Ed_Profile":
-        return <EdProfile currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
+        return <EdProfile currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onUpdateUser={(u) => setCurrentUser(u)} />;
       case "Dashboard":
       default:
         return <EdDashboard currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;

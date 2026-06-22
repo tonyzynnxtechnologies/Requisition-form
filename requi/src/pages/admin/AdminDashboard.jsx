@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getDashboardStats, getRequisitions } from '../../services/api';
+import { ChartLine, Check, X } from "lucide-react";
 
 const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
   const [stats, setStats] = useState({
@@ -19,7 +20,7 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
       try {
         const dashboardStats = await getDashboardStats();
         const data = dashboardStats?.data || dashboardStats || {};
-        
+
         const total = data.total_requisitions || 0;
         const pending = (data.pending_hod || 0) + (data.pending_ed || 0);
         const approved = data.approved || 0;
@@ -32,7 +33,7 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
           rejectedCount: rejected,
           approvalRate: total > 0 ? `${Math.round((approved / total) * 100)}%` : '0%'
         });
-        
+
         const reqData = await getRequisitions();
         const reqs = reqData?.data || reqData || [];
         // Filter to show only pending requisitions (pending HOD, pending ED, or returned to HOD)
@@ -87,7 +88,7 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
   const stop2 = stop1 + pendingPct;
   const stop3 = stop2 + rejectedPct;
 
-  const gradientString = total > 0 
+  const gradientString = total > 0
     ? `conic-gradient(#16a34a 0% ${stop1}%, #ff9800 ${stop1}% ${stop2}%, #ef4444 ${stop2}% ${stop3}%, #d1d5db ${stop3}% 100%)`
     : 'conic-gradient(#d1d5db 0% 100%)';
 
@@ -101,7 +102,6 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
           <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827', margin: 0 }}>Admin Dashboard</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ color: '#6b7280', cursor: 'pointer', fontSize: '20px' }} onClick={() => onNavigate('Users')}>⚙️</span>
             <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#16a34a', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold', color: 'white' }}>
               {currentUser?.name ? currentUser.name.slice(0, 2).toUpperCase() : 'AD'}
             </div>
@@ -114,10 +114,10 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
             <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', letterSpacing: '0.5px', marginBottom: '12px' }}>TOTAL REQUISITIONS</div>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
               <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827' }}>{stats.totalSubmitted}</div>
-              <div style={{ fontSize: '13px', color: '#16a34a', fontWeight: '500', display: 'flex', alignItems: 'center' }}><span style={{ marginRight: '4px' }}>📈</span>Live</div>
+              <div style={{ fontSize: '13px', color: '#16a34a', fontWeight: '500', display: 'flex', alignItems: 'center' }}><span style={{ marginRight: '4px' }}><ChartLine size={20} /></span>Live</div>
             </div>
           </div>
-          
+
           <div style={{ flex: 1, minWidth: '200px', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', letterSpacing: '0.5px', marginBottom: '12px' }}>PENDING REVIEW</div>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
@@ -125,20 +125,20 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
               <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>Requires Action</div>
             </div>
           </div>
-          
+
           <div style={{ flex: 1, minWidth: '200px', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '12px', color: '#16a34a', fontWeight: '600', letterSpacing: '0.5px', marginBottom: '12px' }}>APPROVED REQS</div>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
               <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#16a34a' }}>{stats.approvedCount}</div>
-              <div style={{ color: '#16a34a', fontSize: '18px' }}>✅</div>
+              <div style={{ color: '#16a34a', fontSize: '18px' }}><Check size={20} /></div>
             </div>
           </div>
-          
+
           <div style={{ flex: 1, minWidth: '200px', backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '12px', color: '#ef4444', fontWeight: '600', letterSpacing: '0.5px', marginBottom: '12px' }}>REJECTED REQS</div>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
               <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ef4444' }}>{stats.rejectedCount}</div>
-              <div style={{ color: '#ef4444', fontSize: '18px' }}>❌</div>
+              <div style={{ color: '#ef4444', fontSize: '18px' }}><X size={20} /></div>
             </div>
           </div>
         </div>
@@ -149,14 +149,14 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
           <div style={{ flex: 2, minWidth: '350px', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
             <div style={{ padding: '20px 24px', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ fontWeight: '600', fontSize: '16px', color: '#111827' }}>Pending Requisition Registry</div>
-              <button 
-                onClick={() => onNavigate('AllRequisitions')} 
+              <button
+                onClick={() => onNavigate('AllRequisitions')}
                 style={{ background: 'none', border: 'none', color: '#16a34a', fontWeight: '600', cursor: 'pointer', fontSize: '13px' }}
               >
                 View Registry →
               </button>
             </div>
-            
+
             <div style={{ flex: 1, overflowY: 'auto' }}>
               {recentRequisitions.length === 0 ? (
                 <div style={{ padding: '40px 24px', textAlign: 'center', color: '#6b7280' }}>
@@ -166,13 +166,13 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
                 recentRequisitions.map((req) => {
                   const statusConf = getStatusConfig(req.status);
                   return (
-                    <div 
-                      key={req.id} 
-                      style={{ 
-                        padding: '20px 24px', 
-                        borderBottom: '1px solid #f3f4f6', 
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
+                    <div
+                      key={req.id}
+                      style={{
+                        padding: '20px 24px',
+                        borderBottom: '1px solid #f3f4f6',
+                        display: 'flex',
+                        justifyContent: 'space-between',
                         alignItems: 'center',
                         cursor: 'pointer',
                         transition: 'background-color 0.2s'
@@ -182,15 +182,15 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                       <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                        <div style={{ 
-                          width: '36px', 
-                          height: '36px', 
-                          borderRadius: '50%', 
-                          backgroundColor: statusConf.bg, 
-                          color: statusConf.color, 
-                          display: 'flex', 
-                          justifyContent: 'center', 
-                          alignItems: 'center', 
+                        <div style={{
+                          width: '36px',
+                          height: '36px',
+                          borderRadius: '50%',
+                          backgroundColor: statusConf.bg,
+                          color: statusConf.color,
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
                           fontWeight: 'bold',
                           fontSize: '12px'
                         }}>
@@ -206,10 +206,10 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
                         </div>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <span style={{ 
-                          fontSize: '11px', 
-                          fontWeight: '600', 
-                          padding: '4px 10px', 
+                        <span style={{
+                          fontSize: '11px',
+                          fontWeight: '600',
+                          padding: '4px 10px',
                           borderRadius: '9999px',
                           backgroundColor: statusConf.bg,
                           color: statusConf.color
@@ -223,10 +223,10 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
                 })
               )}
             </div>
-            
+
             <div style={{ padding: '16px', borderTop: '1px solid #e5e7eb', textAlign: 'center' }}>
-              <button 
-                onClick={() => onNavigate('AllRequisitions')} 
+              <button
+                onClick={() => onNavigate('AllRequisitions')}
                 style={{ background: 'none', border: 'none', color: '#111827', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}
               >
                 View Full Registry List
@@ -237,10 +237,10 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
           {/* Right: Requisition Status Donut Chart */}
           <div style={{ flex: 1, minWidth: '250px', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px 24px', display: 'flex', flexDirection: 'column' }}>
             <div style={{ fontWeight: '600', fontSize: '16px', marginBottom: '32px', color: '#111827' }}>Requisition Status</div>
-            
+
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '40px', flex: 1, alignItems: 'center' }}>
-              <div style={{ 
-                width: '180px', height: '180px', borderRadius: '50%', 
+              <div style={{
+                width: '180px', height: '180px', borderRadius: '50%',
                 background: gradientString,
                 display: 'flex', justifyContent: 'center', alignItems: 'center',
                 position: 'relative',
@@ -252,7 +252,7 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
                 </div>
               </div>
             </div>
-            
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '13px' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <div style={{ width: '12px', height: '12px', backgroundColor: '#16a34a', borderRadius: '2px', marginRight: '8px' }}></div>
@@ -273,7 +273,7 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
             </div>
           </div>
         </div>
-        
+
         <div style={{ textAlign: 'center', marginTop: '40px', color: '#9ca3af', fontSize: '12px' }}>
           © 2026 Naipunnya Digital Requisition System · v2.4.0
         </div>

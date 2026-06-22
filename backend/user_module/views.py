@@ -165,12 +165,12 @@ class RequisitionListCreateView(APIView):
             )
 
         elif role == 'ed':
-            # ED sees all club requests (except draft) + department requests that have been HOD-approved/actioned
-            qs = Requisition.objects.exclude(status='draft').exclude(
-                status='pending_hod'
-            ).exclude(
-                status='returned_to_staff', requisition_type='department'
-            )
+            # ED sees all club requests (except draft) + department requests that have been HOD-approved
+            from django.db.models import Q
+            qs = Requisition.objects.filter(
+                (Q(requisition_type='club') & ~Q(status='draft')) |
+                Q(requisition_type='department', actions__action='approved_by_hod')
+            ).distinct()
 
         elif role == 'admin':
             qs = Requisition.objects.all()
@@ -238,6 +238,17 @@ class RequisitionDetailView(APIView):
         requisition = self._get_requisition(pk)
         if not requisition:
             return _error('Requisition not found.', status.HTTP_404_NOT_FOUND)
+
+        user = request.user
+        role = getattr(user, 'role', None)
+        if role == 'ed':
+            is_club = (requisition.requisition_type == 'club' and requisition.status != 'draft')
+            is_hod_approved_dept = (
+                requisition.requisition_type == 'department' and 
+                requisition.actions.filter(action='approved_by_hod').exists()
+            )
+            if not (is_club or is_hod_approved_dept):
+                return _error('You do not have permission to view this requisition.', status.HTTP_403_FORBIDDEN)
 
         serializer = RequisitionDetailSerializer(requisition)
         return Response({'success': True, 'data': serializer.data})
@@ -414,6 +425,8 @@ class RequisitionActionView(APIView):
         if action == 'returned_by_ed' and requisition.requisition_type == 'club':
             new_status = 'returned_to_staff'
         requisition.status = new_status
+        if action == 'approved_by_hod':
+            requisition.priority = serializer.validated_data.get('priority')
         requisition.save()
 
         RequisitionAction.objects.create(
