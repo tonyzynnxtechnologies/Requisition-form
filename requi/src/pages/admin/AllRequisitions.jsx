@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getRequisitions, getDashboardStats, getDepartments, getClubs } from '../../services/api';
+import { FolderUp, Bell } from 'lucide-react';
 
 const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition }) => {
   const [allRequisitions, setAllRequisitions] = useState([]);
@@ -8,7 +9,7 @@ const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition 
   const [departments, setDepartments] = useState([]);
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   const [stats, setStats] = useState({
     activeQueue: 0,
     approvalRate: '0%',
@@ -131,11 +132,11 @@ const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition 
             <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>Review and manage all institutional requisition requests</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <button 
+            <button
               onClick={handleExportCSV}
               style={{ display: 'flex', alignItems: 'center', padding: '10px 16px', backgroundColor: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#374151', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}
             >
-              <span style={{ marginRight: '8px' }}>📥</span> Export CSV
+              <span style={{ marginRight: '8px' }}><FolderUp size={20} /></span> Export CSV
             </button>
           </div>
         </div>
@@ -147,17 +148,17 @@ const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition 
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>{stats.activeQueue}</div>
             <div style={{ fontSize: '13px', color: '#6b7280', fontWeight: '500' }}>⏱ Avg. 2.4 days delay</div>
           </div>
-          
+
           <div style={{ flex: 1, minWidth: '200px', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', letterSpacing: '0.5px', marginBottom: '12px' }}>APPROVAL RATE</div>
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>{stats.approvalRate}</div>
             <div style={{ fontSize: '13px', color: '#16a34a', fontWeight: '500' }}>✓ Institutional standard met</div>
           </div>
-          
+
           <div style={{ flex: 1, minWidth: '200px', backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <div style={{ fontSize: '12px', color: '#ef4444', fontWeight: '600', letterSpacing: '0.5px' }}>PENDING REVIEW</div>
-              <div style={{ color: '#f97316' }}>🔔</div>
+              <div style={{ color: '#f97316' }}><Bell size={30} /></div>
             </div>
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ef4444', marginBottom: '8px' }}>
               {stats.criticalAlerts < 10 ? `0${stats.criticalAlerts}` : stats.criticalAlerts}
@@ -168,7 +169,7 @@ const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition 
 
         {/* Filter Row */}
         <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
-          <select 
+          <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             style={{ flex: 1, minWidth: '150px', padding: '10px 16px', border: '1px solid #d1d5db', borderRadius: '8px', backgroundColor: 'white', color: '#374151', fontSize: '14px', outline: 'none' }}
@@ -180,7 +181,7 @@ const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition 
             <option value="Returned">Returned</option>
           </select>
 
-          <select 
+          <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
             style={{ flex: 1, minWidth: '150px', padding: '10px 16px', border: '1px solid #d1d5db', borderRadius: '8px', backgroundColor: 'white', color: '#374151', fontSize: '14px', outline: 'none' }}
@@ -190,7 +191,7 @@ const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition 
             <option value="Club">Clubs</option>
           </select>
 
-          <select 
+          <select
             value={deptFilter}
             onChange={(e) => setDeptFilter(e.target.value)}
             style={{ flex: 1, minWidth: '150px', padding: '10px 16px', border: '1px solid #d1d5db', borderRadius: '8px', backgroundColor: 'white', color: '#374151', fontSize: '14px', outline: 'none' }}
@@ -204,7 +205,7 @@ const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition 
             </optgroup>
           </select>
 
-          <button 
+          <button
             onClick={handleApplyFilters}
             style={{ padding: '10px 24px', backgroundColor: '#111827', color: 'white', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '500', cursor: 'pointer', transition: 'background-color 0.2s' }}
           >
@@ -254,13 +255,13 @@ const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition 
                           <div style={{ fontSize: '12px', color: '#6b7280' }}>{deptOrClubName || 'General'}</div>
                         </td>
                         <td style={{ padding: '16px 24px' }}>
-                          <span style={{ 
-                            backgroundColor: isClub ? '#dcfce7' : '#f3e8ff', 
-                            color: isClub ? '#16a34a' : '#9333ea', 
-                            padding: '4px 8px', 
-                            borderRadius: '9999px', 
-                            fontSize: '12px', 
-                            fontWeight: '600' 
+                          <span style={{
+                            backgroundColor: isClub ? '#dcfce7' : '#f3e8ff',
+                            color: isClub ? '#16a34a' : '#9333ea',
+                            padding: '4px 8px',
+                            borderRadius: '9999px',
+                            fontSize: '12px',
+                            fontWeight: '600'
                           }}>
                             {isClub ? 'CLUB' : 'DEPT'}
                           </span>
@@ -268,29 +269,29 @@ const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition 
                         <td style={{ padding: '16px 24px', color: '#374151' }}>{req.created_by_name}</td>
                         <td style={{ padding: '16px 24px', color: '#374151' }}>{deptOrClubName || 'General'}</td>
                         <td style={{ padding: '16px 24px' }}>
-                          <span style={{ 
-                            display: 'inline-flex', 
-                            alignItems: 'center', 
-                            backgroundColor: statusStyle.bg, 
-                            color: statusStyle.text, 
-                            padding: '4px 12px', 
-                            borderRadius: '9999px', 
-                            fontSize: '12px', 
-                            fontWeight: '500' 
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            backgroundColor: statusStyle.bg,
+                            color: statusStyle.text,
+                            padding: '4px 12px',
+                            borderRadius: '9999px',
+                            fontSize: '12px',
+                            fontWeight: '500'
                           }}>
-                            <span style={{ 
-                              width: '6px', 
-                              height: '6px', 
-                              borderRadius: '50%', 
-                              backgroundColor: statusStyle.dot, 
-                              marginRight: '6px' 
+                            <span style={{
+                              width: '6px',
+                              height: '6px',
+                              borderRadius: '50%',
+                              backgroundColor: statusStyle.dot,
+                              marginRight: '6px'
                             }}></span>
                             {statusStyle.label}
                           </span>
                         </td>
                         <td style={{ padding: '16px 24px', color: '#6b7280' }}>{req.requisition_date}</td>
                         <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                          <button 
+                          <button
                             onClick={() => onViewRequisition(req.id)}
                             style={{ background: 'none', border: 'none', color: '#16a34a', textDecoration: 'none', fontWeight: '500', cursor: 'pointer' }}
                           >
@@ -304,7 +305,7 @@ const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition 
               </tbody>
             </table>
           </div>
-          
+
           {/* Pagination */}
           <div style={{ padding: '16px 24px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
             <div style={{ color: '#6b7280', fontSize: '14px' }}>

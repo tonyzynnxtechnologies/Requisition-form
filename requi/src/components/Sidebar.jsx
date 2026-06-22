@@ -1,36 +1,48 @@
 import React from 'react';
+import { getMediaUrl } from '../services/api';
+import {
+  LayoutDashboard,
+  Users,
+  FileText,
+  Settings,
+  Building2,
+  SquarePen,
+  LogOut,
+  UserRound
+} from "lucide-react";
+
 
 const Sidebar = ({ activePage, onNavigate, currentUser }) => {
   const role = currentUser?.role || 'admin';
 
   const adminMenu = [
-    { id: 'Dashboard', label: 'Dashboard', icon: '📊' },
-    { id: 'Users', label: 'Users', icon: '👥' },
-    { id: 'Departments', label: 'Departments', icon: '🏢' },
-    { id: 'AllRequisitions', label: 'All Requisitions', icon: '📋' },
-    { id: 'Settings', label: 'Settings', icon: '⚙️' },
+    { id: 'Dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
+    { id: 'Users', label: 'Users', icon: <Users size={20} /> },
+    { id: 'Departments', label: 'Departments', icon: <Building2 size={20} /> },
+    { id: 'AllRequisitions', label: 'All Requisitions', icon: <FileText size={20} /> },
+    { id: 'Settings', label: 'Settings', icon: <Settings size={20} /> },
   ];
 
   const hodMenu = [
-    { id: 'Dashboard', label: 'Dashboard', icon: '📊' },
-    { id: 'HodRequisitions', label: 'Requisitions', icon: '📋' },
-    { id: 'HodStaff', label: 'Staff', icon: '👥' },
-    { id: 'HodProfile', label: 'Profile', icon: '👤' },
+    { id: 'Dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
+    { id: 'HodRequisitions', label: 'Requisitions', icon: <FileText size={20} /> },
+    { id: 'HodStaff', label: 'Staff', icon: <Users size={20} /> },
+    { id: 'HodProfile', label: 'Profile', icon: <UserRound size={20} /> },
   ];
 
   const edMenu = [
-    { id: 'Dashboard', label: 'Dashboard', icon: '📊' },
-    { id: 'EdRequisitions', label: 'Requisitions', icon: '📋' },
-    { id: 'EdUsers', label: 'Users', icon: '👥' },
-    { id: 'EdDepartments', label: 'Departments', icon: '🏢' },
-    { id: 'EdProfile', label: 'Profile', icon: '👤' },
+    { id: 'Dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
+    { id: 'EdRequisitions', label: 'Requisitions', icon: <FileText size={20} /> },
+    { id: 'EdUsers', label: 'Users', icon: <Users size={20} /> },
+    { id: 'EdDepartments', label: 'Departments', icon: <Building2 size={20} /> },
+    { id: 'EdProfile', label: 'Profile', icon: <UserRound size={20} /> },
   ];
 
   const staffMenu = [
-    { id: 'Dashboard', label: 'Dashboard', icon: '📊' },
-    { id: 'CreateRequisition', label: 'New Requisition', icon: '✏️' },
-    { id: 'MyRequisitions', label: 'My Requisitions', icon: '📄' },
-    { id: 'UserProfile', label: 'My Profile', icon: '👤' },
+    { id: 'Dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
+    { id: 'CreateRequisition', label: 'New Requisition', icon: <SquarePen size={20} /> },
+    { id: 'MyRequisitions', label: 'My Requisitions', icon: <FileText size={20} /> },
+    { id: 'UserProfile', label: 'My Profile', icon: <UserRound size={20} /> },
   ];
 
   const menuMap = { admin: adminMenu, hod: hodMenu, ed: edMenu, staff: staffMenu };
@@ -73,16 +85,41 @@ const Sidebar = ({ activePage, onNavigate, currentUser }) => {
       </div>
 
       {/* User Info */}
-      <div style={{
-        padding: '16px 20px', borderBottom: '1px solid #1f2937',
-        display: 'flex', alignItems: 'center', gap: '12px',
-      }}>
+      <div
+        onClick={() => {
+          if (role === 'admin') {
+            onNavigate('UserProfile');
+          } else if (role === 'hod') {
+            onNavigate('HodProfile');
+          } else if (role === 'ed') {
+            onNavigate('EdProfile');
+          } else {
+            onNavigate('UserProfile');
+          }
+        }}
+        style={{
+          padding: '16px 20px', borderBottom: '1px solid #1f2937',
+          display: 'flex', alignItems: 'center', gap: '12px',
+          cursor: 'pointer', transition: 'background-color 0.15s ease',
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1f2937'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+      >
         <div style={{
           width: '32px', height: '32px', borderRadius: '50%',
           backgroundColor: '#374151', display: 'flex', justifyContent: 'center',
           alignItems: 'center', fontWeight: 'bold', fontSize: '13px', color: '#4ade80',
+          overflow: 'hidden',
         }}>
-          {currentUser?.name?.charAt(0)?.toUpperCase() || '?'}
+          {currentUser?.profile_pic ? (
+            <img
+              src={getMediaUrl(currentUser.profile_pic)}
+              alt="Profile"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            currentUser?.name?.charAt(0)?.toUpperCase() || '?'
+          )}
         </div>
         <div style={{ flex: 1, overflow: 'hidden' }}>
           <div style={{
@@ -141,7 +178,7 @@ const Sidebar = ({ activePage, onNavigate, currentUser }) => {
             fontWeight: '500', padding: '8px 0',
           }}
         >
-          <span style={{ fontSize: '16px' }}>🚪</span> Logout
+          <span style={{ fontSize: '16px' }}><LogOut size={22} /></span> Logout
         </div>
       </div>
     </div>

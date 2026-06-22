@@ -51,10 +51,8 @@ const EdUsers = ({ currentUser, onNavigate }) => {
     if (roleFilter !== 'All') {
       if (roleFilter === 'HOD') {
         result = result.filter(u => u.role === 'hod');
-      } else if (roleFilter === 'Coordinator') {
-        result = result.filter(u => u.role === 'staff' && u.club_name);
       } else if (roleFilter === 'Staff') {
-        result = result.filter(u => u.role === 'staff' && !u.club_name);
+        result = result.filter(u => u.role === 'staff');
       }
     }
 
@@ -69,7 +67,6 @@ const EdUsers = ({ currentUser, onNavigate }) => {
   const totalCount = users.filter(u => u.role !== 'admin' && u.role !== 'ed').length;
   const activeStaffCount = users.filter(u => u.role === 'staff' && u.is_active).length;
   const hodsCount = users.filter(u => u.role === 'hod').length;
-  const coordinatorsCount = users.filter(u => u.role === 'staff' && u.club_name).length;
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Inter, sans-serif', backgroundColor: '#f8fafc' }}>
@@ -144,14 +141,6 @@ const EdUsers = ({ currentUser, onNavigate }) => {
             </div>
           </div>
 
-          {/* Card 4 */}
-          <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', gap: '16px', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}>★</div>
-            <div>
-              <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold' }}>CLUB COORDINATORS</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a' }}>{coordinatorsCount}</div>
-            </div>
-          </div>
         </div>
 
         {/* Filter & Search Bar Row */}
@@ -185,7 +174,6 @@ const EdUsers = ({ currentUser, onNavigate }) => {
           >
             <option value="All">All Roles</option>
             <option value="HOD">HODs</option>
-            <option value="Coordinator">Coordinators</option>
             <option value="Staff">Staff Only</option>
           </select>
 
@@ -209,7 +197,6 @@ const EdUsers = ({ currentUser, onNavigate }) => {
                   <th style={{ padding: '16px 24px', borderBottom: '1px solid #e2e8f0' }}>USER</th>
                   <th style={{ padding: '16px 24px', borderBottom: '1px solid #e2e8f0' }}>ROLE</th>
                   <th style={{ padding: '16px 24px', borderBottom: '1px solid #e2e8f0' }}>PRIMARY DEPARTMENT</th>
-                  <th style={{ padding: '16px 24px', borderBottom: '1px solid #e2e8f0' }}>CLUB AFFILIATIONS</th>
                   <th style={{ padding: '16px 24px', borderBottom: '1px solid #e2e8f0' }}>EMAIL</th>
                   <th style={{ padding: '16px 24px', borderBottom: '1px solid #e2e8f0' }}>STATUS</th>
                   <th style={{ padding: '16px 24px', borderBottom: '1px solid #e2e8f0', textAlign: 'right' }}>ACTIONS</th>
@@ -217,13 +204,12 @@ const EdUsers = ({ currentUser, onNavigate }) => {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan="7" style={{ padding: '24px', textAlign: 'center' }}>Loading user directory...</td></tr>
+                  <tr><td colSpan="6" style={{ padding: '24px', textAlign: 'center' }}>Loading user directory...</td></tr>
                 ) : filteredUsers.length === 0 ? (
-                  <tr><td colSpan="7" style={{ padding: '32px', textAlign: 'center', color: '#64748b' }}>No users match the selected filters.</td></tr>
+                  <tr><td colSpan="6" style={{ padding: '32px', textAlign: 'center', color: '#64748b' }}>No users match the selected filters.</td></tr>
                 ) : (
                   filteredUsers.map((user) => {
                     const isUserHod = user.role === 'hod';
-                    const isUserCoord = user.role === 'staff' && user.club_name;
                     return (
                       <tr key={user.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
                         <td style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -236,24 +222,13 @@ const EdUsers = ({ currentUser, onNavigate }) => {
                           </div>
                         </td>
                         <td style={{ padding: '16px 24px' }}>
-                          {isUserHod && (
+                          {isUserHod ? (
                             <span style={{ backgroundColor: '#dcfce7', color: '#16a34a', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold' }}>HOD</span>
-                          )}
-                          {isUserCoord && (
-                            <span style={{ backgroundColor: '#dbeafe', color: '#2563eb', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold' }}>Coordinator</span>
-                          )}
-                          {!isUserHod && !isUserCoord && (
+                          ) : (
                             <span style={{ backgroundColor: '#f1f5f9', color: '#475569', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold' }}>Staff</span>
                           )}
                         </td>
                         <td style={{ padding: '16px 24px', color: '#475569' }}>{user.departmant_name || 'N/A'}</td>
-                        <td style={{ padding: '16px 24px' }}>
-                          {user.club_name ? (
-                            <span style={{ backgroundColor: '#fef3c7', color: '#d97706', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold' }}>{user.club_name}</span>
-                          ) : (
-                            <span style={{ color: '#94a3b8', fontStyle: 'italic', fontSize: '12px' }}>None</span>
-                          )}
-                        </td>
                         <td style={{ padding: '16px 24px', color: '#64748b' }}>{user.email}</td>
                         <td style={{ padding: '16px 24px' }}>
                           <span style={{ 
@@ -336,11 +311,11 @@ const EdUsers = ({ currentUser, onNavigate }) => {
                 {selectedUserForModal.name}
               </h2>
               <span style={{
-                backgroundColor: selectedUserForModal.role === 'hod' ? '#dcfce7' : (selectedUserForModal.role === 'staff' && selectedUserForModal.club_name ? '#dbeafe' : '#f1f5f9'),
-                color: selectedUserForModal.role === 'hod' ? '#16a34a' : (selectedUserForModal.role === 'staff' && selectedUserForModal.club_name ? '#2563eb' : '#475569'),
+                backgroundColor: selectedUserForModal.role === 'hod' ? '#dcfce7' : '#f1f5f9',
+                color: selectedUserForModal.role === 'hod' ? '#16a34a' : '#475569',
                 padding: '4px 12px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase'
               }}>
-                {selectedUserForModal.role === 'hod' ? 'HOD' : (selectedUserForModal.role === 'staff' && selectedUserForModal.club_name ? 'Coordinator' : 'Staff')}
+                {selectedUserForModal.role === 'hod' ? 'HOD' : 'Staff'}
               </span>
             </div>
 
@@ -359,10 +334,6 @@ const EdUsers = ({ currentUser, onNavigate }) => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
                     <span style={{ color: '#64748b', fontWeight: '500' }}>Department</span>
                     <span style={{ color: '#0f172a', fontWeight: '600' }}>{selectedUserForModal.departmant_name || 'N/A'}</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
-                    <span style={{ color: '#64748b', fontWeight: '500' }}>Club Affiliation</span>
-                    <span style={{ color: '#0f172a', fontWeight: '600' }}>{selectedUserForModal.club_name || 'None'}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', alignItems: 'center' }}>
                     <span style={{ color: '#64748b', fontWeight: '500' }}>Account Status</span>

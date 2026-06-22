@@ -201,7 +201,6 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition }) => {
           >
             <option value="All">All Statuses</option>
             <option value="Pending ED">Pending ED</option>
-            <option value="Pending HOD">Pending HOD</option>
             <option value="Approved">Approved</option>
             <option value="Returned">Returned</option>
             <option value="Rejected">Rejected</option>

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getRequisitions } from '../../services/api';
+import { ClipboardList, FileDown, SquareCheckBig, RotateCcw, TriangleAlert, Eye } from 'lucide-react';
 
 const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisition }) => {
   const [allRequisitions, setAllRequisitions] = useState([]);
   const [filteredReqs, setFilteredReqs] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Stats
   const [stats, setStats] = useState({
     pending: 0,
@@ -26,11 +27,11 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
     try {
       const response = await getRequisitions();
       const reqs = Array.isArray(response) ? response : (response?.data || []);
-      
+
       // Filter requests for HOD's department/club
       const hodDeptName = currentUser?.departmant_name || currentUser?.department_name;
       const hodClubName = currentUser?.club_name;
-      
+
       const filteredByDept = reqs.filter(r => {
         if (r.requisition_type === 'department' && hodDeptName) {
           return r.department_name === hodDeptName;
@@ -46,7 +47,7 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
       const active = filteredByDept.filter(r => r.status?.toLowerCase() === 'pending_ed').length;
       const approved = filteredByDept.filter(r => r.status?.toLowerCase() === 'approved').length;
       const returned = filteredByDept.filter(r => r.status?.toLowerCase()?.startsWith('returned')).length;
-      
+
       // Calculate return rate dynamically
       const total = filteredByDept.length;
       const returnRatePct = total > 0 ? ((returned / total) * 100).toFixed(1) + '%' : '0.0%';
@@ -129,9 +130,9 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
             <div>
               <div style={{ fontSize: '11px', color: '#6b7280', fontWeight: '600', letterSpacing: '0.5px', marginBottom: '6px' }}>PENDING MY APPROVAL</div>
               <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827' }}>{stats.pending}</div>
-              <div style={{ fontSize: '11px', color: '#ef4444', marginTop: '4px', fontWeight: '500' }}>⚠️ Action required</div>
+              <div style={{ fontSize: '11px', color: '#ef4444', marginTop: '4px', fontWeight: '500' }}><TriangleAlert size={14} /> Action required</div>
             </div>
-            <span style={{ fontSize: '24px', color: '#f59e0b' }}>📋</span>
+            <span style={{ fontSize: '24px', color: '#f59e0b' }}><ClipboardList size={30} /></span>
           </div>
 
           <div style={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
@@ -140,7 +141,7 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
               <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827' }}>{stats.active < 10 ? `0${stats.active}` : stats.active}</div>
               <div style={{ fontSize: '11px', color: '#16a34a', marginTop: '4px', fontWeight: '500' }}>⚙️ Processing by ED</div>
             </div>
-            <span style={{ fontSize: '24px', color: '#10b981' }}>📥</span>
+            <span style={{ fontSize: '24px', color: '#10b981' }}><FileDown size={30} /></span>
           </div>
 
           <div style={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
@@ -149,7 +150,7 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
               <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827' }}>{stats.approved}</div>
               <div style={{ fontSize: '11px', color: '#3b82f6', marginTop: '4px', fontWeight: '500' }}>Total approved requests</div>
             </div>
-            <span style={{ fontSize: '24px', color: '#3b82f6' }}>✓</span>
+            <span style={{ fontSize: '24px', color: '#3b82f6' }}><SquareCheckBig size={30} /></span>
           </div>
 
           <div style={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
@@ -158,14 +159,14 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
               <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827' }}>{stats.returnRate}</div>
               <div style={{ fontSize: '11px', color: '#8b5cf6', marginTop: '4px', fontWeight: '500' }}>Requisitions sent back</div>
             </div>
-            <span style={{ fontSize: '24px', color: '#8b5cf6' }}>⟲</span>
+            <span style={{ fontSize: '24px', color: '#8b5cf6' }}><RotateCcw size={30} /></span>
           </div>
         </div>
 
         {/* Filters and Needs Review banner */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: '12px' }}>
-            <select 
+            <select
               value={timeframe}
               onChange={(e) => setTimeframe(e.target.value)}
               style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', backgroundColor: 'white', outline: 'none' }}
@@ -174,7 +175,7 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
               <option>This Quarter</option>
               <option>This Year</option>
             </select>
-            <select 
+            <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', backgroundColor: 'white', outline: 'none' }}
@@ -186,7 +187,7 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
               <option value="Returned">Returned</option>
             </select>
           </div>
-          
+
           {needsReviewCount > 0 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#fffbeb', border: '1px solid #fef3c7', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', color: '#b45309', fontWeight: '500' }}>
               <span>⚠️</span> Needs Review <span style={{ backgroundColor: '#f59e0b', color: 'white', padding: '1px 6px', borderRadius: '10px', fontSize: '11px' }}>{needsReviewCount}</span>
@@ -263,18 +264,18 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
                         <td style={{ padding: '18px 24px', textAlign: 'right' }}>
                           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px' }}>
                             {isPendingHod ? (
-                              <button 
+                              <button
                                 onClick={() => handleView(req.id)}
                                 style={{ backgroundColor: 'white', border: '1px solid #16a34a', color: '#16a34a', borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' }}
                               >
                                 Review
                               </button>
                             ) : (
-                              <span 
+                              <span
                                 onClick={() => handleView(req.id)}
                                 style={{ color: '#9ca3af', fontSize: '18px', cursor: 'pointer' }}
                               >
-                                👁️
+                                <Eye size={20} />
                               </span>
                             )}
                           </div>
@@ -286,7 +287,7 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
               </tbody>
             </table>
           </div>
-          
+
           {/* Pagination */}
           <div style={{ padding: '16px 24px', borderTop: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
             <div style={{ color: '#6b7280', fontSize: '14px' }}>

@@ -5,17 +5,16 @@ import {
   updateRequisition,
   submitRequisition,
   getRequisitionDetail,
-  getDepartments,
-  getClubs
+  getDepartments
 } from '../../services/api';
 
 const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [departments, setDepartments] = useState([]);
-  const [clubs, setClubs] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   // Requisition form state
   const [requisitionType, setRequisitionType] = useState('department');
@@ -34,13 +33,12 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
     { item_name: '', specification: '', required_quantity: 1, estimated_cost: '' }
   ]);
 
-  // Load departments and clubs
+  // Load departments
   useEffect(() => {
     const loadLookups = async () => {
       try {
-        const [depts, cls] = await Promise.all([getDepartments(), getClubs()]);
+        const depts = await getDepartments();
         setDepartments(depts);
-        setClubs(cls);
       } catch (err) {
         console.error('Failed to load lookup data', err);
       }
@@ -108,28 +106,48 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
   };
 
   const validateForm = () => {
-    if (!programmeName.trim()) return 'Programme/Event name is required.';
-    if (!programmeDatetime) return 'Programme Date & Time is required.';
-    if (requisitionType === 'department' && !department) return 'Department selection is required.';
-    if (requisitionType === 'club' && !club) return 'Club selection is required.';
-    if (items.length === 0) return 'At least one item must be requested.';
+    const errs = {};
+    if (!programmeName.trim()) {
+      errs.programmeName = 'Programme/Event name is required.';
+    }
+    if (!programmeDatetime) {
+      errs.programmeDatetime = 'Programme Date & Time is required.';
+    }
+    if (requisitionType === 'department' && !department) {
+      errs.department = 'Department selection is required.';
+    }
+    if (requisitionType === 'club' && !club.trim()) {
+      errs.club = 'Club name/selection is required.';
+    }
 
+    const itemErrs = {};
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-      if (!item.item_name.trim()) return `Item #${i + 1} Name is required.`;
-      if (!item.required_quantity || item.required_quantity < 1) {
-        return `Item #${i + 1} Quantity must be at least 1.`;
+      const singleItemErr = {};
+      if (!item.item_name.trim()) {
+        singleItemErr.item_name = 'Name is required.';
+      }
+      if (!item.required_quantity || parseInt(item.required_quantity) < 1) {
+        singleItemErr.required_quantity = 'Quantity must be at least 1.';
+      }
+      if (Object.keys(singleItemErr).length > 0) {
+        itemErrs[i] = singleItemErr;
       }
     }
-    return '';
+    if (Object.keys(itemErrs).length > 0) {
+      errs.items = itemErrs;
+    }
+
+    return errs;
   };
 
   const handleSave = async (submitAfterSave = false) => {
     setError('');
     setSuccess('');
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
+    setFieldErrors({});
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setFieldErrors(validationErrors);
       return;
     }
 
@@ -255,12 +273,17 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
           <div style={{ backgroundColor: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '28px' }}>
             <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: '0 0 20px 0' }}>Event & Requisition Details</h2>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: requisitionType === 'club' ? '1fr 1fr' : '1fr', gap: '20px', marginBottom: '20px' }}>
               <div>
                 <label style={labelStyle}>Requisition Type</label>
                 <select 
                   value={requisitionType} 
-                  onChange={(e) => setRequisitionType(e.target.value)}
+                  onChange={(e) => {
+                    setRequisitionType(e.target.value);
+                    if (e.target.value === 'department') {
+                      setPriority('medium');
+                    }
+                  }}
                   style={inputStyle}
                   disabled={!!editId}
                 >
@@ -268,19 +291,21 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
                   <option value="club">Club Request</option>
                 </select>
               </div>
-              <div>
-                <label style={labelStyle}>Priority Level</label>
-                <select 
-                  value={priority} 
-                  onChange={(e) => setPriority(e.target.value)}
-                  style={inputStyle}
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="urgent">Urgent</option>
-                </select>
-              </div>
+              {requisitionType === 'club' && (
+                <div>
+                  <label style={labelStyle}>Priority Level</label>
+                  <select 
+                    value={priority} 
+                    onChange={(e) => setPriority(e.target.value)}
+                    style={inputStyle}
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="urgent">Urgent</option>
+                  </select>
+                </div>
+              )}
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
@@ -293,6 +318,11 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
                   placeholder="e.g. Annual Tech Fest 2026"
                   style={inputStyle} 
                 />
+                {fieldErrors.programmeName && (
+                  <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                    {fieldErrors.programmeName}
+                  </div>
+                )}
               </div>
               <div>
                 <label style={labelStyle}>Date of Requisition</label>
@@ -314,6 +344,11 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
                   onChange={(e) => setProgrammeDatetime(e.target.value)}
                   style={inputStyle} 
                 />
+                {fieldErrors.programmeDatetime && (
+                  <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                    {fieldErrors.programmeDatetime}
+                  </div>
+                )}
               </div>
               <div>
                 <label style={labelStyle}>Venue</label>
@@ -350,6 +385,11 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
                       <option value="">Select Department</option>
                       {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                     </select>
+                    {fieldErrors.department && (
+                      <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                        {fieldErrors.department}
+                      </div>
+                    )}
                   </>
                 ) : (
                   <>
@@ -361,6 +401,11 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
                       placeholder="e.g. Fine Arts Club"
                       style={inputStyle}
                     />
+                    {fieldErrors.club && (
+                      <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                        {fieldErrors.club}
+                      </div>
+                    )}
                   </>
                 )}
               </div>
@@ -419,6 +464,11 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
                           placeholder="e.g. HDMI Cable"
                           style={inputStyle}
                         />
+                        {fieldErrors.items?.[idx]?.item_name && (
+                          <div style={{ color: '#ef4444', fontSize: '11px', marginTop: '4px' }}>
+                            {fieldErrors.items[idx].item_name}
+                          </div>
+                        )}
                       </td>
                       <td style={{ padding: '12px 8px' }}>
                         <input 
@@ -437,6 +487,11 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
                           style={inputStyle}
                           min="1"
                         />
+                        {fieldErrors.items?.[idx]?.required_quantity && (
+                          <div style={{ color: '#ef4444', fontSize: '11px', marginTop: '4px' }}>
+                            {fieldErrors.items[idx].required_quantity}
+                          </div>
+                        )}
                       </td>
                       <td style={{ padding: '12px 8px' }}>
                         <input 

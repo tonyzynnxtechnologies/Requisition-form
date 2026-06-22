@@ -86,7 +86,7 @@ class LoginView(APIView):
                     "email": authenticated_user.email,
                     "role": authenticated_user.role,
                     "department": authenticated_user.department.id if authenticated_user.department else None,
-                    "club": authenticated_user.club.id if authenticated_user.club else None,
+                    "club": None,
                     "profile_pic": authenticated_user.profile_pic.url if authenticated_user.profile_pic else None
                 }
             }
@@ -121,8 +121,8 @@ class CurrentUserView(APIView):
                 "role": user.role,
                 "department": user.department_id,
                 "department_name": user.department.name if user.department else None,
-                "club": user.club_id,
-                "club_name": user.club.name if user.club else None,
+                "club": None,
+                "club_name": None,
                 "profile_pic": user.profile_pic.url if user.profile_pic else None,
             }
         })
@@ -318,3 +318,39 @@ class SystemSettingsView(APIView):
         for key, val in request.data.items():
             SystemSetting.objects.update_or_create(key=key, defaults={'value': str(val)})
         return Response({'status': 'success'})
+
+
+class ProfilePicUploadView(APIView):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return Response({"success": False, "message": "Unauthorized"}, status=401)
+        
+        file_obj = request.FILES.get('file') or request.FILES.get('profile_pic')
+        if not file_obj:
+            return Response({"success": False, "message": "No photo provided"}, status=400)
+        
+        user = request.user
+        user.profile_pic = file_obj
+        user.save()
+        
+        profile_pic_url = user.profile_pic.url
+        return Response({
+            "success": True, 
+            "message": "Profile picture updated successfully",
+            "profile_pic": profile_pic_url
+        })
+
+    def delete(self, request):
+        if not request.user.is_authenticated:
+            return Response({"success": False, "message": "Unauthorized"}, status=401)
+        
+        user = request.user
+        if user.profile_pic:
+            user.profile_pic.delete(save=False)
+            user.profile_pic = None
+            user.save()
+            
+        return Response({
+            "success": True, 
+            "message": "Profile picture removed successfully"
+        })

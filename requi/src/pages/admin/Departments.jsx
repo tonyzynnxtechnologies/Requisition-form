@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getDepartments, createDepartment, updateDepartment, deleteDepartment, getUsers } from '../../services/api';
+import { Building2, User, TriangleAlert, Search, Pencil, Trash2 } from 'lucide-react';
 
 const Departments = ({ currentUser, onNavigate, onLogout }) => {
   const [departments, setDepartments] = useState([]);
@@ -143,14 +144,14 @@ const Departments = ({ currentUser, onNavigate, onLogout }) => {
 
       {/* Main Content */}
       <div style={{ flex: 1, marginLeft: '240px', padding: '32px 40px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column' }}>
-        
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
           <div>
             <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827', margin: '0 0 8px 0' }}>Departments</h1>
             <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>Manage departments that can submit requisitions</p>
           </div>
           <div>
-            <button 
+            <button
               onClick={handleOpenAdd}
               style={{ display: 'flex', alignItems: 'center', padding: '10px 16px', backgroundColor: '#111827', color: 'white', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}
             >
@@ -168,17 +169,17 @@ const Departments = ({ currentUser, onNavigate, onLogout }) => {
                 {totalDepts < 10 ? `0${totalDepts}` : totalDepts}
               </div>
             </div>
-            <div style={{ fontSize: '24px', color: '#16a34a' }}>🏢</div>
+            <div style={{ fontSize: '24px', color: '#16a34a' }}><Building2 size={30} /></div>
           </div>
-          
+
           <div style={{ flex: 1, minWidth: '200px', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', letterSpacing: '0.5px', marginBottom: '8px' }}>TOTAL STAFF</div>
               <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827' }}>{totalStaff}</div>
             </div>
-            <div style={{ fontSize: '24px', color: '#4b5563' }}>👤</div>
+            <div style={{ fontSize: '24px', color: '#4b5563' }}><User size={30} /></div>
           </div>
-          
+
           <div style={{ flex: 1, minWidth: '200px', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', letterSpacing: '0.5px', marginBottom: '8px' }}>DEPARTMENTS WITHOUT HOD</div>
@@ -186,20 +187,20 @@ const Departments = ({ currentUser, onNavigate, onLogout }) => {
                 {deptsWithoutHod < 10 ? `0${deptsWithoutHod}` : deptsWithoutHod}
               </div>
             </div>
-            <div style={{ fontSize: '24px', color: deptsWithoutHod > 0 ? '#ef4444' : '#16a34a' }}>{deptsWithoutHod > 0 ? '⚠️' : '✓'}</div>
+            <div style={{ fontSize: '24px', color: deptsWithoutHod > 0 ? '#ef4444' : '#16a34a' }}>{deptsWithoutHod > 0 ? <TriangleAlert size={30} /> : <CheckCircle size={30} />}</div>
           </div>
         </div>
 
         {/* Search Bar */}
         <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
           <div style={{ flex: 1, position: 'relative' }}>
-            <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}>🔍</span>
-            <input 
-              type="text" 
+            <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}><Search size={20} color='black' /></span>
+            <input
+              type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search departments by name, code or HOD..." 
-              style={{ width: '100%', padding: '12px 16px 12px 44px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} 
+              placeholder="Search departments by name, code or HOD..."
+              style={{ width: '100%', padding: '12px 16px 12px 44px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}
             />
           </div>
         </div>
@@ -241,8 +242,8 @@ const Departments = ({ currentUser, onNavigate, onLogout }) => {
                         <td style={{ padding: '20px 24px', color: '#374151' }}>{getStaffCount(dept.id)}</td>
                         <td style={{ padding: '20px 24px', textAlign: 'right' }}>
                           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                            <span onClick={() => handleOpenEdit(dept)} style={{ cursor: 'pointer', fontSize: '16px' }} title="Edit">✏️</span>
-                            <span onClick={() => handleDelete(dept.id)} style={{ cursor: 'pointer', color: '#ef4444', fontSize: '16px' }} title="Delete">🗑️</span>
+                            <span onClick={() => handleOpenEdit(dept)} style={{ cursor: 'pointer', fontSize: '16px' }} title="Edit"><Pencil size={20} color='orange' /></span>
+                            <span onClick={() => handleDelete(dept.id)} style={{ cursor: 'pointer', color: '#ef4444', fontSize: '16px' }} title="Delete"><Trash2 size={20} /></span>
                           </div>
                         </td>
                       </tr>
@@ -261,7 +262,7 @@ const Departments = ({ currentUser, onNavigate, onLogout }) => {
               <h2 style={{ margin: '0 0 16px 0', fontSize: '20px', color: '#111827' }}>
                 {editingDept ? 'Edit Department' : 'Add New Department'}
               </h2>
-              
+
               {error && (
                 <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fee2e2', color: '#ef4444', padding: '10px', borderRadius: '6px', fontSize: '13px', marginBottom: '16px' }}>
                   {error}
