@@ -220,7 +220,7 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
                     const isPendingHod = statusLower === 'pending_hod';
                     return (
                       <tr key={req.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                        <td style={{ padding: '18px 24px', fontWeight: '500', color: '#16a34a' }}>#{req.id}</td>
+                        <td style={{ padding: '18px 24px', fontWeight: '500', color: '#16a34a' }}>{req.id}</td>
                         <td style={{ padding: '18px 24px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#e0e7ff', color: '#4f46e5', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold', fontSize: '10px' }}>

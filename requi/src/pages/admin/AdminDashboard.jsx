@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getDashboardStats, getRequisitions } from '../../services/api';
-import { ChartLine, Check, X } from "lucide-react";
+import { ChartLine, Check, X, Eye } from "lucide-react";
 
 const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
   const [stats, setStats] = useState({
@@ -198,7 +198,7 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
                         </div>
                         <div>
                           <div style={{ fontSize: '14px', color: '#111827', fontWeight: '600' }}>
-                            {req.programme_name} (#{req.id})
+                            {req.programme_name} ({req.id})
                           </div>
                           <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
                             Initiator: {req.created_by_name} ({req.requisition_type === 'department' ? req.department_name : req.club_name}) · {req.requisition_date}
@@ -216,7 +216,7 @@ const AdminDashboard = ({ currentUser, onNavigate, onViewRequisition }) => {
                         }}>
                           {statusConf.label}
                         </span>
-                        <span style={{ color: '#9ca3af', fontSize: '16px' }}>👁️</span>
+                        <span style={{ color: '#9ca3af', fontSize: '16px' }}><Eye size={25} /></span>
                       </div>
                     </div>
                   );

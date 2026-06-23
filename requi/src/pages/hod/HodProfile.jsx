@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getMediaUrl, uploadProfilePic, deleteProfilePic } from '../../services/api';
+import { Camera, UserRoundPen, Building2 } from 'lucide-react';
 
 const HodProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
   const [emailAlerts, setEmailAlerts] = useState(true);
@@ -94,7 +95,7 @@ const HodProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
               onClick={handleEditProfile}
               style={{ padding: '10px 16px', backgroundColor: '#111827', color: 'white', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}
             >
-              ✏️ Edit Profile
+              <UserRoundPen size={20} /> Edit Profile
             </button>
           </div>
         </div>
@@ -156,7 +157,7 @@ const HodProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
                   }}
                   title="Upload Photo"
                 >
-                  📷
+                  <Camera size={20} color='white' background='#111827' />
                 </label>
                 <input 
                   id="profile-upload" 
@@ -192,7 +193,7 @@ const HodProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
               <div style={{ color: '#6b7280', fontSize: '15px', marginBottom: '16px' }}>HOD & Associate Professor</div>
               
               <div style={{ display: 'inline-flex', backgroundColor: '#f3f4f6', padding: '6px 16px', borderRadius: '9999px', fontSize: '13px', fontWeight: '500', color: '#4b5563', marginBottom: '24px' }}>
-                🏫 {hodDeptDisplay}
+                <Building2 size={15} /> {hodDeptDisplay}
               </div>
               
               <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'left' }}>

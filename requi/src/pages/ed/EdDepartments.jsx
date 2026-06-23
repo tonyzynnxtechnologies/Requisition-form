@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getDepartments, getUsers, getRequisitions } from '../../services/api';
+import { Building2, Users2, BriefcaseBusiness } from 'lucide-react';
 
 const EdDepartments = ({ currentUser, onNavigate }) => {
   const [departments, setDepartments] = useState([]);
@@ -125,7 +126,7 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
         {/* KPI Row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' }}>
           <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', gap: '16px', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}>🏢</div>
+            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}><Building2 size={30} /></div>
             <div>
               <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold' }}>TOTAL DEPARTMENTS</div>
               <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a' }}>{totalDepts}</div>
@@ -133,7 +134,7 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
           </div>
 
           <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', gap: '16px', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}>👥</div>
+            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}><Users2 size={30} /></div>
             <div>
               <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold' }}>ACTIVE HODS</div>
               <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a' }}>{activeHods}</div>
@@ -141,7 +142,7 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
           </div>
 
           <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', gap: '16px', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}>💼</div>
+            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}><BriefcaseBusiness size={30} /></div>
             <div>
               <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold' }}>TOTAL STAFF COUNT</div>
               <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a' }}>{totalStaff}</div>

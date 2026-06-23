@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getRequisitions } from '../../services/api';
+import { NotepadText, FileText } from 'lucide-react';
 
 const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) => {
   const [pendingReqs, setPendingReqs] = useState([]);
@@ -89,7 +90,7 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
           {/* Card 1 */}
           <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderLeft: '4px solid #16a34a', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <span style={{ fontSize: '20px' }}>📋</span>
+              <span style={{ fontSize: '20px' }}><NotepadText size={25} /></span>
               <span style={{ fontSize: '10px', backgroundColor: '#dcfce7', color: '#16a34a', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold' }}>ACTION NEEDED</span>
             </div>
             <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 'bold', marginBottom: '6px', letterSpacing: '0.5px' }}>AWAITING FINAL APPROVAL</div>
@@ -100,8 +101,8 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
           {/* Card 2 */}
           <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderLeft: '4px solid #2563eb', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <span style={{ fontSize: '20px' }}>💰</span>
-              <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 'bold' }}>📈 +8.4%</span>
+              <span style={{ fontSize: '20px' }}></span>
+              <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 'bold' }}><FileText size={25} /> +8.4%</span>
             </div>
             <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 'bold', marginBottom: '6px', letterSpacing: '0.5px' }}>MONTHLY EXPENDITURE</div>
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0f172a' }}>{stats.monthlyExpenditure}</div>

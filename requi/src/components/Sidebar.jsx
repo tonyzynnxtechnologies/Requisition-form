@@ -27,7 +27,6 @@ const Sidebar = ({ activePage, onNavigate, currentUser }) => {
     { id: 'Dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
     { id: 'HodRequisitions', label: 'Requisitions', icon: <FileText size={20} /> },
     { id: 'HodStaff', label: 'Staff', icon: <Users size={20} /> },
-    { id: 'HodProfile', label: 'Profile', icon: <UserRound size={20} /> },
   ];
 
   const edMenu = [
@@ -35,7 +34,6 @@ const Sidebar = ({ activePage, onNavigate, currentUser }) => {
     { id: 'EdRequisitions', label: 'Requisitions', icon: <FileText size={20} /> },
     { id: 'EdUsers', label: 'Users', icon: <Users size={20} /> },
     { id: 'EdDepartments', label: 'Departments', icon: <Building2 size={20} /> },
-    { id: 'EdProfile', label: 'Profile', icon: <UserRound size={20} /> },
   ];
 
   const staffMenu = [

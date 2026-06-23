@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getUsers } from '../../services/api';
 import { Users } from 'lucide-react';
+import { Search, Eye } from 'lucide-react';
 
 const HodStaff = ({ currentUser, onNavigate }) => {
   const [staffList, setStaffList] = useState([]);
@@ -156,7 +157,7 @@ const HodStaff = ({ currentUser, onNavigate }) => {
               </span>
             </span>
             <div style={{ position: 'relative', width: '250px' }}>
-              <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}>🔍</span>
+              <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}><Search size={20} color='black'/></span>
               <input
                 type="text"
                 value={searchQuery}
@@ -221,7 +222,7 @@ const HodStaff = ({ currentUser, onNavigate }) => {
                           onClick={() => alert(`Staff Name: ${staff.name}\nEmail: ${staff.email}\nEmployee ID: ${staff.employeeId}\nStatus: ${staff.status}`)}
                           style={{ color: '#9ca3af', fontSize: '18px', cursor: 'pointer' }}
                         >
-                          👁️
+                          <Eye size={25} />
                         </span>
                       </td>
                     </tr>

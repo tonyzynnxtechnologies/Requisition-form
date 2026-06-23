@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getRequisitions } from '../../services/api';
+import { ChartLine, FileDown, IndianRupee, Zap, Search, Eye } from 'lucide-react';
 
 const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition }) => {
   const [allRequisitions, setAllRequisitions] = useState([]);
@@ -132,7 +133,7 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition }) => {
               </div>
               <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>vs last year</div>
             </div>
-            <span style={{ fontSize: '24px', color: '#16a34a' }}>📈</span>
+            <span style={{ fontSize: '24px', color: '#16a34a' }}><ChartLine size={30} /></span>
           </div>
 
           {/* Card 2 */}
@@ -147,7 +148,7 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition }) => {
               </div>
               <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Awaiting ED Sign-off</div>
             </div>
-            <span style={{ fontSize: '24px', color: '#f59e0b' }}>📥</span>
+            <span style={{ fontSize: '24px', color: '#f59e0b' }}><FileDown size={30 } /></span>
           </div>
 
           {/* Card 3 */}
@@ -157,7 +158,7 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition }) => {
               <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#0f172a' }}>{totalApprovedValue > 0 ? formattedExp : '₹12.45 L'}</div>
               <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Total approved value</div>
             </div>
-            <span style={{ fontSize: '24px', color: '#059669' }}>₹</span>
+            <span style={{ fontSize: '24px', color: '#059669' }}><IndianRupee size={30} /></span>
           </div>
 
           {/* Card 4 */}
@@ -167,7 +168,7 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition }) => {
               <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#0f172a' }}>2.8 Days</div>
               <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Average turnaround time</div>
             </div>
-            <span style={{ fontSize: '24px', color: '#3b82f6' }}>⚡</span>
+            <span style={{ fontSize: '24px', color: '#3b82f6' }}><Zap size={30} /></span>
           </div>
         </div>
 
@@ -210,7 +211,7 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition }) => {
             onClick={handleApplyFilters}
             style={{ padding: '10px 20px', backgroundColor: '#0f172a', color: 'white', border: 'none', borderRadius: '8px', fontSize: '13.5px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            <span>🔍</span> Apply Filters
+            <span><Search size={20} color='white' /></span> Apply Filters
           </button>
         </div>
 
@@ -298,7 +299,7 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition }) => {
                               onClick={() => onViewRequisition(req.id)}
                               style={{ color: '#94a3b8', fontSize: '16px', cursor: 'pointer' }}
                             >
-                              👁️
+                              <Eye size={25} />
                             </span>
                           )}
                         </td>

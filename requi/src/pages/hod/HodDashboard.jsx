@@ -191,7 +191,7 @@ const HodDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) 
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                      <td style={{ padding: '14px 24px', color: '#6b7280', fontWeight: '500' }}>#{req.id}</td>
+                      <td style={{ padding: '14px 24px', color: '#6b7280', fontWeight: '500' }}>{req.id}</td>
                       <td style={{ padding: '14px 24px', fontWeight: '500', color: '#111827' }}>{req.programme_name}</td>
                       <td style={{ padding: '14px 24px', color: '#374151' }}>{req.created_by_name}</td>
                       <td style={{ padding: '14px 24px' }}>{getPriorityBadge(req.priority)}</td>
