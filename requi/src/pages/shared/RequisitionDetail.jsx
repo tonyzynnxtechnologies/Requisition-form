@@ -57,7 +57,9 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
     setSuccess('');
     
     // Validate comment if action is a rejection or return
-    if ((actionType.includes('reject') || actionType.includes('return')) && !comment.trim()) {
+    // Exception: HOD can return to staff without comment when ED returned it to HOD
+    const isReturnByHodFromEdReturn = actionType === 'returned_by_hod' && requisition.status === 'returned_to_hod';
+    if ((actionType.includes('reject') || actionType.includes('return')) && !comment.trim() && !isReturnByHodFromEdReturn) {
       setError('A comment is required when rejecting or returning a requisition.');
       return;
     }

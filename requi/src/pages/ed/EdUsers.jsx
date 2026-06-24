@@ -99,7 +99,7 @@ const EdUsers = ({ currentUser, onNavigate }) => {
           </div>
         </div>
 
-        {/* Title Section */}
+        {/* Title Section 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
           <div>
             <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827', margin: '0 0 8px 0' }}>Institutional User Directory</h1>
@@ -111,7 +111,7 @@ const EdUsers = ({ currentUser, onNavigate }) => {
           >
             <span>👤+</span> Invite User
           </button>
-        </div>
+        </div>*/}
 
         {/* Stats Row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' }}>

@@ -86,7 +86,9 @@ class LoginView(APIView):
                     "email": authenticated_user.email,
                     "role": authenticated_user.role,
                     "department": authenticated_user.department.id if authenticated_user.department else None,
-                    "club": None,
+                    "department_name": authenticated_user.department.name if authenticated_user.department else None,
+                    "club": authenticated_user.club.id if authenticated_user.club else None,
+                    "club_name": authenticated_user.club.name if authenticated_user.club else None,
                     "profile_pic": authenticated_user.profile_pic.url if authenticated_user.profile_pic else None
                 }
             }
@@ -121,8 +123,8 @@ class CurrentUserView(APIView):
                 "role": user.role,
                 "department": user.department_id,
                 "department_name": user.department.name if user.department else None,
-                "club": None,
-                "club_name": None,
+                "club": user.club_id,
+                "club_name": user.club.name if user.club else None,
                 "profile_pic": user.profile_pic.url if user.profile_pic else None,
             }
         })

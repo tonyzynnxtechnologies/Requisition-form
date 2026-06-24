@@ -432,7 +432,13 @@ class RequisitionActionView(APIView):
                 f'but current status is "{requisition.status}".'
             )
 
-        # 4. Apply
+        # 4. Comment requirement checks
+        if action == 'returned_by_ed' and not comment.strip():
+            return _error('A comment is required when ED returns a requisition.')
+        if action == 'returned_by_hod' and requisition.status == 'pending_hod' and not comment.strip():
+            return _error('A comment is required when returning a requisition to staff.')
+
+        # 5. Apply
         new_status = ACTION_STATUS_MAP[action]
         if action == 'returned_by_ed' and requisition.requisition_type == 'club':
             new_status = 'returned_to_staff'
@@ -535,3 +541,55 @@ class RequisitionHistoryView(APIView):
         actions = requisition.actions.select_related('acted_by').order_by('acted_at')
         serializer = RequisitionActionSerializer(actions, many=True)
         return Response({'success': True, 'data': serializer.data})
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  Institutional Audit Trail (ED / Admin only)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class AuditTrailView(APIView):
+    """
+    GET /requisitions/audit-trail/  → Returns all recent actions across the institution.
+    Only accessible by ED and Admin users.
+    """
+
+    def get(self, request):
+        user = request.user
+        role = getattr(user, 'role', None)
+
+        if role not in ('ed', 'admin'):
+            return _error('Only ED and Admin can access the audit trail.', status.HTTP_403_FORBIDDEN)
+
+        # Get recent actions across all requisitions
+        limit = int(request.query_params.get('limit', 50))
+        limit = min(limit, 200)  # Cap at 200
+
+        actions = RequisitionAction.objects.select_related(
+            'acted_by', 'requisition', 'requisition__department', 'requisition__club'
+        ).order_by('-acted_at')[:limit]
+
+        data = []
+        for act in actions:
+            req = act.requisition
+            entity_name = ''
+            if req.requisition_type == 'department' and req.department:
+                entity_name = req.department.name
+            elif req.requisition_type == 'club' and req.club:
+                entity_name = req.club.name
+
+            data.append({
+                'id': act.id,
+                'action': act.action,
+                'action_display': act.get_action_display(),
+                'acted_by_name': act.acted_by.name if act.acted_by else 'System',
+                'acted_by_role': act.acted_by.role if act.acted_by else '',
+                'comment': act.comment,
+                'acted_at': act.acted_at.isoformat(),
+                'requisition_id': req.id,
+                'programme_name': req.programme_name,
+                'requisition_type': req.requisition_type,
+                'entity_name': entity_name,
+                'requisition_status': req.status,
+            })
+
+        return Response({'success': True, 'data': data})

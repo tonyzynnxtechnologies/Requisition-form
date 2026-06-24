@@ -231,14 +231,14 @@ const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
             <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Processed across all departments</div>
           </div>
 
-          <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+          {/* <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
             <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold', marginBottom: '8px' }}>AVERAGE DECISION TAT</div>
             <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#0f172a', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
               {avgTat}
               <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '500' }}>Target: &lt;6h</span>
             </div>
             <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Time from submission to final action</div>
-          </div>
+          </div>*/}
         </div>
 
         {/* Grid Layout: Account Info & Security */}

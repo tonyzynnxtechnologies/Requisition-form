@@ -3,12 +3,12 @@ import Sidebar from '../../components/Sidebar';
 import { getRequisitions } from '../../services/api';
 import { ChartLine, FileDown, IndianRupee, Zap, Search, Eye } from 'lucide-react';
 
-const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition }) => {
+const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDeptFilter }) => {
   const [allRequisitions, setAllRequisitions] = useState([]);
   const [filteredReqs, setFilteredReqs] = useState([]);
   
   // Filter states
-  const [deptFilter, setDeptFilter] = useState('All');
+  const [deptFilter, setDeptFilter] = useState(initialDeptFilter || 'All');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
   const [loading, setLoading] = useState(true);
@@ -33,6 +33,13 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition }) => {
     }, 5000); // Poll every 5 seconds for real-time updates
     return () => clearInterval(interval);
   }, []);
+
+  // Sync deptFilter when initialDeptFilter prop changes (e.g., navigating from dept card)
+  useEffect(() => {
+    if (initialDeptFilter) {
+      setDeptFilter(initialDeptFilter);
+    }
+  }, [initialDeptFilter]);
 
   const handleApplyFilters = () => {
     let result = [...allRequisitions];
@@ -162,14 +169,19 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition }) => {
           </div>
 
           {/* Card 4 */}
-          <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+          {/*<div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
             <div>
               <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold', marginBottom: '8px', letterSpacing: '0.5px' }}>APPROVAL TAT</div>
               <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#0f172a' }}>2.8 Days</div>
               <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Average turnaround time</div>
             </div>
+<<<<<<< HEAD
             <span style={{ fontSize: '24px', color: '#3b82f6' }}><Zap size={30} /></span>
           </div>
+=======
+            <span style={{ fontSize: '24px', color: '#3b82f6' }}>⚡</span>
+          </div>*/}
+>>>>>>> c9b3f02c (Audit trail)
         </div>
 
         {/* Filter Bar Row */}

@@ -12,9 +12,8 @@ const HodStaff = ({ currentUser, onNavigate }) => {
 
   // Cards stats
   const [stats, setStats] = useState({
-    total: 42,
-    active: 38,
-    onLeave: 4
+    total: 0,
+    active: 0
   });
 
   useEffect(() => {
@@ -49,12 +48,10 @@ const HodStaff = ({ currentUser, onNavigate }) => {
         setFilteredStaff(mapped);
 
         const activeCount = mapped.filter(s => s.status === 'Active').length;
-        const leaveCount = mapped.filter(s => s.status === 'On Leave').length;
 
         setStats({
-          total: 38 + mapped.length, // Offset to match target total
-          active: 34 + activeCount, // Offset to match target active
-          onLeave: 4 + leaveCount // Offset to match target leave
+          total: mapped.length,
+          active: activeCount
         });
       } catch (e) {
         console.error(e);
@@ -63,6 +60,10 @@ const HodStaff = ({ currentUser, onNavigate }) => {
       }
     };
     fetchStaff();
+    const interval = setInterval(() => {
+      fetchStaff();
+    }, 5000);
+    return () => clearInterval(interval);
   }, [currentUser]);
 
   // Filter search
@@ -118,7 +119,6 @@ const HodStaff = ({ currentUser, onNavigate }) => {
               <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', marginBottom: '8px' }}>TOTAL STAFF</div>
               <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
                 {stats.total}
-                <span style={{ fontSize: '12px', color: '#16a34a', fontWeight: '500' }}>+2 this month</span>
               </div>
             </div>
             <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: '#eff6ff', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '18px' }}><Users size={30} /></div>
@@ -129,21 +129,12 @@ const HodStaff = ({ currentUser, onNavigate }) => {
               <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', marginBottom: '8px' }}>ACTIVE STAFF</div>
               <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
                 {stats.active}
-                <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>92% Availability</span>
               </div>
             </div>
             <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: '#dcfce7', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '18px' }}>✓</div>
           </div>
 
-          <div style={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div>
-              <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', marginBottom: '8px' }}>ON LEAVE</div>
-              <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                {stats.onLeave < 10 ? `0${stats.onLeave}` : stats.onLeave}
-              </div>
-            </div>
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', backgroundColor: '#fffbeb', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '18px' }}>📅</div>
-          </div>
+
         </div>
 
         {/* Directory Card */}

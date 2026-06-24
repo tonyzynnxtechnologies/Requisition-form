@@ -36,6 +36,7 @@ function App() {
     localStorage.getItem("activePage") || "Dashboard"
   );
   const [selectedRequisitionId, setSelectedRequisitionId] = useState(null);
+  const [edDeptFilter, setEdDeptFilter] = useState(null);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -70,7 +71,7 @@ function App() {
     }
   };
 
-  const handleNavigate = (page, id = null) => {
+  const handleNavigate = (page, id = null, extra = null) => {
     if (page === "Logout") {
       handleLogout();
       return;
@@ -78,6 +79,12 @@ function App() {
     setActivePage(page);
     localStorage.setItem("activePage", page);
     setSelectedRequisitionId(id);
+    // If navigating to EdRequisitions with a department filter
+    if ((page === 'EdRequisitions' || page === 'Ed_Requisitions') && extra?.deptFilter) {
+      setEdDeptFilter(extra.deptFilter);
+    } else if (page !== 'EdRequisitions' && page !== 'Ed_Requisitions') {
+      setEdDeptFilter(null);
+    }
   };
 
   const handleViewRequisition = (id) => {
@@ -190,7 +197,7 @@ function App() {
     switch (activePage) {
       case "EdRequisitions":
       case "Ed_Requisitions":
-        return <EdRequisitions currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;
+        return <EdRequisitions currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} initialDeptFilter={edDeptFilter} />;
       case "EdUsers":
       case "Ed_Users":
         return <EdUsers currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;

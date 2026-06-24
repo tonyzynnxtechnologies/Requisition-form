@@ -85,6 +85,7 @@ class RequisitionListSerializer(serializers.ModelSerializer):
             'requisition_date',
             'item_count',
             'total_estimated_cost',
+            'programme_datetime',
             'created_at',
             'updated_at'
         ]
@@ -228,10 +229,6 @@ class RequisitionActionWriteSerializer(serializers.Serializer):
         comment = data.get('comment', '')
         priority = data.get('priority')
         
-        if 'returned' in action and not comment.strip():
-            raise serializers.ValidationError(
-                {'comment': 'A comment is required when returning a requisition.'}
-            )
         if action == 'approved_by_hod' and not priority:
             raise serializers.ValidationError(
                 {'priority': 'Priority level is required when HOD approves.'}
