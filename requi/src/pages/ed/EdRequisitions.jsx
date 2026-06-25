@@ -175,13 +175,8 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDep
               <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#0f172a' }}>2.8 Days</div>
               <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Average turnaround time</div>
             </div>
-<<<<<<< HEAD
-            <span style={{ fontSize: '24px', color: '#3b82f6' }}><Zap size={30} /></span>
-          </div>
-=======
             <span style={{ fontSize: '24px', color: '#3b82f6' }}>⚡</span>
           </div>*/}
->>>>>>> c9b3f02c (Audit trail)
         </div>
 
         {/* Filter Bar Row */}

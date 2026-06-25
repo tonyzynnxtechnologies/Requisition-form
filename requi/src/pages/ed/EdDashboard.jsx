@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
-<<<<<<< HEAD
-import { getRequisitions } from '../../services/api';
-import { NotepadText, FileText } from 'lucide-react';
-=======
 import { getRequisitions, getAuditTrail } from '../../services/api';
 import { getAcademicYear, getMonthlyTotals, getAYTotalExpenditure, formatRupee, AY_MONTH_LABELS, getAYMonthIndex } from '../../utils/academicYear';
->>>>>>> c9b3f02c (Audit trail)
 
 const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) => {
   const [pendingReqs, setPendingReqs] = useState([]);
@@ -131,18 +126,6 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0f172a' }}>{stats.pendingCount}</div>
           </div>
 
-<<<<<<< HEAD
-          {/* Card 2 */}
-          <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderLeft: '4px solid #2563eb', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <span style={{ fontSize: '20px' }}></span>
-              <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 'bold' }}><FileText size={25} /> +8.4%</span>
-            </div>
-            <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 'bold', marginBottom: '6px', letterSpacing: '0.5px' }}>MONTHLY EXPENDITURE</div>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0f172a' }}>{stats.monthlyExpenditure}</div>
-            <div style={{ fontSize: '11px', color: '#64748b', marginTop: '6px' }}>vs. ₹11.5L last month</div>
-          </div>
-=======
           {/* Card 2 — Academic Year Expenditure */}
           {(() => {
             const pctChange = stats.prevAYExpenditure > 0
@@ -167,7 +150,6 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
               </div>
             );
           })()}
->>>>>>> c9b3f02c (Audit trail)
 
           {/* Card 3 — This Month vs Same Month Last AY */}
           {(() => {
