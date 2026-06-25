@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getRequisitions, getAuditTrail } from '../../services/api';
 import { getAcademicYear, getMonthlyTotals, getAYTotalExpenditure, formatRupee, AY_MONTH_LABELS, getAYMonthIndex } from '../../utils/academicYear';
+import { NotepadText } from 'lucide-react';
 
 const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) => {
   const [pendingReqs, setPendingReqs] = useState([]);
@@ -223,7 +224,7 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
                         ₹{parseFloat(req.total_estimated_cost || 0).toLocaleString('en-IN')}
                       </td>
                       <td style={{ padding: '16px 20px', textAlign: 'right' }}>
-                        <button 
+                        <button
                           onClick={() => onViewRequisition(req.id)}
                           style={{ border: 'none', background: 'none', color: '#16a34a', fontWeight: '600', cursor: 'pointer', padding: 0 }}
                         >
@@ -237,7 +238,7 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
             </table>
           </div>
           <div style={{ padding: '16px', borderTop: '1px solid #e2e8f0', textAlign: 'center' }}>
-            <span 
+            <span
               onClick={() => onNavigate('Dashboard')}
               style={{ color: '#64748b', fontSize: '13px', fontWeight: '500', cursor: 'pointer' }}
             >
@@ -337,20 +338,20 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
                     // Role label for college context
                     const roleLabel = entry.acted_by_role === 'ed' ? 'Executive Director'
                       : entry.acted_by_role === 'hod' ? 'Head of Dept.'
-                      : entry.acted_by_role === 'staff' ? 'Staff'
-                      : entry.acted_by_role === 'admin' ? 'Administrator'
-                      : '';
+                        : entry.acted_by_role === 'staff' ? 'Staff'
+                          : entry.acted_by_role === 'admin' ? 'Administrator'
+                            : '';
 
                     // Format action display text for college
                     const actionLabel = entry.action === 'submitted' ? 'Requisition Submitted'
                       : entry.action === 'resubmitted' ? 'Requisition Re-submitted'
-                      : entry.action === 'approved_by_hod' ? 'HOD Recommended'
-                      : entry.action === 'rejected_by_hod' ? 'HOD Rejected'
-                      : entry.action === 'returned_by_hod' ? 'Returned to Staff'
-                      : entry.action === 'approved_by_ed' ? 'ED Approved'
-                      : entry.action === 'rejected_by_ed' ? 'ED Rejected'
-                      : entry.action === 'returned_by_ed' ? 'Returned to HOD'
-                      : entry.action_display || entry.action.replace(/_/g, ' ');
+                        : entry.action === 'approved_by_hod' ? 'HOD Recommended'
+                          : entry.action === 'rejected_by_hod' ? 'HOD Rejected'
+                            : entry.action === 'returned_by_hod' ? 'Returned to Staff'
+                              : entry.action === 'approved_by_ed' ? 'ED Approved'
+                                : entry.action === 'rejected_by_ed' ? 'ED Rejected'
+                                  : entry.action === 'returned_by_ed' ? 'Returned to HOD'
+                                    : entry.action_display || entry.action.replace(/_/g, ' ');
 
                     // Time ago
                     const actedDate = new Date(entry.acted_at);
@@ -361,9 +362,9 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
                     const diffDays = Math.floor(diffMs / 86400000);
                     const timeAgo = diffMins < 1 ? 'Just now'
                       : diffMins < 60 ? `${diffMins}m ago`
-                      : diffHours < 24 ? `${diffHours}h ago`
-                      : diffDays < 7 ? `${diffDays}d ago`
-                      : actedDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                        : diffHours < 24 ? `${diffHours}h ago`
+                          : diffDays < 7 ? `${diffDays}d ago`
+                            : actedDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 
                     const isLast = idx === (showAllAudit ? auditTrail.length - 1 : Math.min(7, auditTrail.length - 1));
 
@@ -395,7 +396,7 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
                             <span style={{ fontWeight: '600' }}>{entry.acted_by_name}</span>
                             <span style={{ color: '#94a3b8', fontSize: '10px', marginLeft: '4px' }}>({roleLabel})</span>
                           </div>
-                          <div 
+                          <div
                             style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', cursor: 'pointer' }}
                             onClick={() => onViewRequisition(entry.requisition_id)}
                           >
@@ -421,7 +422,7 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
 
             {auditTrail.length > 8 && (
               <div style={{ padding: '12px 24px', borderTop: '1px solid #e2e8f0', textAlign: 'center', flexShrink: 0 }}>
-                <span 
+                <span
                   onClick={() => setShowAllAudit(!showAllAudit)}
                   style={{ color: '#064e3b', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
                 >

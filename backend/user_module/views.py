@@ -554,6 +554,7 @@ class AuditTrailView(APIView):
     """
 
     def get(self, request):
+        print(">>>>>>>> AUDIT TRAIL VIEW HIT <<<<<<<<")
         user = request.user
         role = getattr(user, 'role', None)
 

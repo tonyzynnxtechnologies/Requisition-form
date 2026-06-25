@@ -39,6 +39,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5174",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:5174",
+    "https://nonhierarchical-nicky-verminous.ngrok-free.dev",
+    "https://*.ngrok-free.dev",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -63,6 +65,9 @@ SPECTACULAR_SETTINGS = {
 }
 
 AUTH_USER_MODEL = 'admin_panel.User'
+
+SESSION_COOKIE_DOMAIN = None
+CSRF_COOKIE_DOMAIN = None
 
 
 # Application definition
