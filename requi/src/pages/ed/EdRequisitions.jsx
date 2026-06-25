@@ -6,7 +6,7 @@ import { ChartLine, FileDown, IndianRupee, Zap, Search, Eye } from 'lucide-react
 const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDeptFilter }) => {
   const [allRequisitions, setAllRequisitions] = useState([]);
   const [filteredReqs, setFilteredReqs] = useState([]);
-  
+
   // Filter states
   const [deptFilter, setDeptFilter] = useState(initialDeptFilter || 'All');
   const [categoryFilter, setCategoryFilter] = useState('All');
@@ -81,7 +81,7 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDep
   }, [allRequisitions, deptFilter, categoryFilter, statusFilter]);
 
   const pendingEdCount = allRequisitions.filter(r => r.status?.toLowerCase() === 'pending_ed').length;
-  
+
   // Calculate total approved expenditure dynamically
   const approvedReqs = allRequisitions.filter(r => r.status?.toLowerCase() === 'approved');
   const totalApprovedValue = approvedReqs.reduce((sum, r) => sum + parseFloat(r.total_estimated_cost || 0), 0);
@@ -120,7 +120,7 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDep
             <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827', margin: '0 0 8px 0' }}>Institutional Requisitions</h1>
             <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>Comprehensive oversight of all departmental and club resource requests.</p>
           </div>
-          <button 
+          <button
             onClick={() => alert('Exporting Annual CAPEX Expenditure Report... (PDF)')}
             style={{ backgroundColor: '#064e3b', color: 'white', border: 'none', borderRadius: '8px', padding: '12px 20px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}
           >
@@ -155,7 +155,7 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDep
               </div>
               <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Awaiting ED Sign-off</div>
             </div>
-            <span style={{ fontSize: '24px', color: '#f59e0b' }}><FileDown size={30 } /></span>
+            <span style={{ fontSize: '24px', color: '#f59e0b' }}><FileDown size={30} /></span>
           </div>
 
           {/* Card 3 */}
@@ -167,26 +167,11 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDep
             </div>
             <span style={{ fontSize: '24px', color: '#059669' }}><IndianRupee size={30} /></span>
           </div>
-
-          {/* Card 4 */}
-          {/*<div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div>
-              <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold', marginBottom: '8px', letterSpacing: '0.5px' }}>APPROVAL TAT</div>
-              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#0f172a' }}>2.8 Days</div>
-              <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Average turnaround time</div>
-            </div>
-<<<<<<< HEAD
-            <span style={{ fontSize: '24px', color: '#3b82f6' }}><Zap size={30} /></span>
-          </div>
-=======
-            <span style={{ fontSize: '24px', color: '#3b82f6' }}>⚡</span>
-          </div>*/}
->>>>>>> c9b3f02c (Audit trail)
         </div>
 
         {/* Filter Bar Row */}
         <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center', backgroundColor: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <select 
+          <select
             value={deptFilter}
             onChange={(e) => setDeptFilter(e.target.value)}
             style={{ flex: 1, minWidth: '140px', padding: '10px 14px', border: '1px solid #cbd5e1', borderRadius: '8px', backgroundColor: 'white', fontSize: '13.5px', outline: 'none' }}
@@ -197,7 +182,7 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDep
             ))}
           </select>
 
-          <select 
+          <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
             style={{ flex: 1, minWidth: '140px', padding: '10px 14px', border: '1px solid #cbd5e1', borderRadius: '8px', backgroundColor: 'white', fontSize: '13.5px', outline: 'none' }}
@@ -207,7 +192,7 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDep
             <option value="Clubs">Clubs Only</option>
           </select>
 
-          <select 
+          <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             style={{ flex: 1, minWidth: '140px', padding: '10px 14px', border: '1px solid #cbd5e1', borderRadius: '8px', backgroundColor: 'white', fontSize: '13.5px', outline: 'none' }}
@@ -219,7 +204,7 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDep
             <option value="Rejected">Rejected</option>
           </select>
 
-          <button 
+          <button
             onClick={handleApplyFilters}
             style={{ padding: '10px 20px', backgroundColor: '#0f172a', color: 'white', border: 'none', borderRadius: '8px', fontSize: '13.5px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
@@ -300,14 +285,14 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDep
                         </td>
                         <td style={{ padding: '18px 24px', textAlign: 'right' }}>
                           {isPendingEd ? (
-                            <button 
+                            <button
                               onClick={() => onViewRequisition(req.id)}
                               style={{ padding: '6px 12px', border: 'none', backgroundColor: '#16a34a', color: 'white', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
                             >
                               Sign-off
                             </button>
                           ) : (
-                            <span 
+                            <span
                               onClick={() => onViewRequisition(req.id)}
                               style={{ color: '#94a3b8', fontSize: '16px', cursor: 'pointer' }}
                             >
