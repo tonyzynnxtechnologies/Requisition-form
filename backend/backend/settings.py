@@ -127,7 +127,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'naipunnya_requisition',
         'USER': 'root',
-        'PASSWORD': '1012',
+        'PASSWORD': 'root',
         'HOST': 'localhost',
         'PORT': '3306',
     }
