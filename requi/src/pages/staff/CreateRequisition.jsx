@@ -15,6 +15,7 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+  const todayStr = new Date().toISOString().split('T')[0];
 
   // Requisition form state
   const [requisitionType, setRequisitionType] = useState('department');
@@ -113,6 +114,12 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
     if (!programmeDatetime) {
       errs.programmeDatetime = 'Programme Date & Time is required.';
     }
+    if (!editId && requisitionDate < todayStr) {
+      errs.requisitionDate = 'Requisition date cannot be in the past.';
+    }
+    if (!venue.trim()) {
+      errs.venue = 'Venue is required.';
+    }
     if (requisitionType === 'department' && !department) {
       errs.department = 'Department selection is required.';
     }
@@ -159,8 +166,8 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
       requisition_date: requisitionDate,
       programme_datetime: programmeDatetime ? (programmeDatetime.includes('Z') || programmeDatetime.includes('+') ? programmeDatetime : `${programmeDatetime}:00Z`) : null,
       venue: venue.trim() || null,
-      target_audience: targetAudience.trim() || null,
-      resource_person_details: resourcePersonDetails.trim() || null,
+      target_audience: targetAudience.trim(),
+      resource_person_details: resourcePersonDetails.trim(),
       department: requisitionType === 'department' ? parseInt(department) : null,
       club: requisitionType === 'club' ? club : null,
       items: items.map((item, idx) => ({
@@ -176,14 +183,19 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
       let reqId = editId;
       if (editId) {
         await updateRequisition(editId, payload);
-        setSuccess('Requisition updated successfully.');
+        if (!submitAfterSave) {
+          setSuccess('Requisition updated successfully.');
+        }
       } else {
         const res = await createRequisition(payload);
         reqId = res.data.id;
-        setSuccess('Requisition created as draft.');
+        if (!submitAfterSave) {
+          setSuccess('Requisition created as draft.');
+        }
       }
 
       if (submitAfterSave && reqId) {
+        setSuccess('Submitting requisition...');
         await submitRequisition(reqId);
         setSuccess('Requisition submitted successfully!');
         setTimeout(() => onNavigate('MyRequisitions'), 1500);
@@ -330,8 +342,14 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
                   type="date" 
                   value={requisitionDate} 
                   onChange={(e) => setRequisitionDate(e.target.value)}
+                  min={editId ? undefined : todayStr}
                   style={inputStyle} 
                 />
+                {fieldErrors.requisitionDate && (
+                  <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                    {fieldErrors.requisitionDate}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -351,7 +369,7 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
                 )}
               </div>
               <div>
-                <label style={labelStyle}>Venue</label>
+                <label style={labelStyle}>Venue *</label>
                 <input 
                   type="text" 
                   value={venue} 
@@ -359,6 +377,11 @@ const CreateRequisition = ({ currentUser, onNavigate, onLogout, editId }) => {
                   placeholder="e.g. Seminar Hall III"
                   style={inputStyle} 
                 />
+                {fieldErrors.venue && (
+                  <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                    {fieldErrors.venue}
+                  </div>
+                )}
               </div>
             </div>
 

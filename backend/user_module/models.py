@@ -36,10 +36,10 @@ class Requisition(models.Model):
     programme_name = models.CharField(max_length=255)
     requisition_date = models.DateField()
     programme_datetime = models.DateTimeField(null=True, blank=True)
-    venue = models.CharField(max_length=255, blank=True)
+    venue = models.CharField(max_length=255)
     target_audience = models.CharField(max_length=255, blank=True)
 
-    resource_person_details = models.TextField(blank=True)
+    resource_person_details = models.TextField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

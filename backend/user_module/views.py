@@ -151,6 +151,22 @@ def send_requisition_notification(requisition, comment=""):
             logger.error(f"Failed to send email to {email}: {e}")
 
 
+def send_requisition_notification_async(requisition, comment=""):
+    import threading
+    def thread_target(requisition_id, comment_str):
+        try:
+            req_obj = Requisition.objects.get(id=requisition_id)
+            send_requisition_notification(req_obj, comment_str)
+        except Exception as err:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Async email notification thread failed: {err}")
+
+    thread = threading.Thread(target=thread_target, args=(requisition.id, comment))
+    thread.daemon = True
+    thread.start()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 #  Staff: list own requisitions / create new
 # ─────────────────────────────────────────────────────────────────────────────
@@ -355,7 +371,7 @@ class RequisitionSubmitView(APIView):
         )
 
         try:
-            send_requisition_notification(requisition)
+            send_requisition_notification_async(requisition)
         except Exception as e:
             print(f"Error sending submission email: {e}")
 
@@ -455,7 +471,7 @@ class RequisitionActionView(APIView):
         )
 
         try:
-            send_requisition_notification(requisition, comment=comment)
+            send_requisition_notification_async(requisition, comment=comment)
         except Exception as e:
             print(f"Error sending action email: {e}")
 
