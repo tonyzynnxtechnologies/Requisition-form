@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getRequisitions, getMediaUrl, uploadProfilePic, deleteProfilePic } from '../../services/api';
-import { Pencil, Shield, IdCard, Camera } from 'lucide-react';
 
 const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
   const [mfaEnabled, setMfaEnabled] = useState(true);
@@ -154,7 +153,7 @@ const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
                     width: '28px', 
                     height: '28px', 
                     borderRadius: '50%', 
-                    backgroundColor: '#064e3b', 
+                    backgroundColor: '#16a34a', 
                     border: '2px solid white', 
                     display: 'flex', 
                     justifyContent: 'center', 
@@ -166,7 +165,7 @@ const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
                   }}
                   title="Upload Photo"
                 >
-                  <Camera size={20} color='white' />
+                  📷
                 </label>
                 <input 
                   id="profile-upload" 
@@ -209,7 +208,7 @@ const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
               onClick={handleEditProfile}
               style={{ backgroundColor: '#064e3b', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 18px', fontSize: '13.5px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
-              <Pencil size={20} /> Edit Profile
+              ✏️ Edit Profile
             </button>
           </div>
         </div>
@@ -231,14 +230,14 @@ const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
             <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Processed across all departments</div>
           </div>
 
-          {/* <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+          <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
             <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold', marginBottom: '8px' }}>AVERAGE DECISION TAT</div>
             <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#0f172a', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
               {avgTat}
               <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '500' }}>Target: &lt;6h</span>
             </div>
             <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Time from submission to final action</div>
-          </div>*/}
+          </div>
         </div>
 
         {/* Grid Layout: Account Info & Security */}
@@ -249,7 +248,7 @@ const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
             <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
                 <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '600', color: '#0f172a' }}>Account Information</h3>
-                <span style={{ fontSize: '16px' }}><IdCard size={20} /></span>
+                <span style={{ fontSize: '16px' }}>🆔</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '13.5px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #f8fafc', paddingBottom: '8px' }}>
@@ -288,7 +287,7 @@ const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
               </div>
 
               <div style={{ backgroundColor: '#f0fdf4', border: '1px solid #dcfce7', borderRadius: '8px', padding: '12px', display: 'flex', gap: '8px', fontSize: '11.5px', color: '#166534', lineHeight: '1.4' }}>
-                <span style={{ fontSize: '14px' }}><Shield size={20} /></span>
+                <span style={{ fontSize: '14px' }}>🛡️</span>
                 <span>All digital sign-offs are encrypted with SHA-256 and time-stamped for institutional auditing.</span>
               </div>
             </div>
@@ -299,7 +298,7 @@ const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
             <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
                 <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '600', color: '#0f172a' }}>Security & Preferences</h3>
-                <span style={{ fontSize: '16px' }}><Shield size={20} /></span>
+                <span style={{ fontSize: '16px' }}>🛡️</span>
               </div>
 
               {/* Authentication */}

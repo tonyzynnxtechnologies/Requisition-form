@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-2ryzl)@8*k*sg$z_ls1ui^w8_xwyc11+h9)nbk=-7kzs$4xr(q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
@@ -39,8 +39,6 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5174",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:5174",
-    "https://nonhierarchical-nicky-verminous.ngrok-free.dev",
-    "https://*.ngrok-free.dev",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -65,9 +63,6 @@ SPECTACULAR_SETTINGS = {
 }
 
 AUTH_USER_MODEL = 'admin_panel.User'
-
-SESSION_COOKIE_DOMAIN = None
-CSRF_COOKIE_DOMAIN = None
 
 
 # Application definition
@@ -127,7 +122,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'naipunnya_requisition',
         'USER': 'root',
-        'PASSWORD': 'root',
+        'PASSWORD': '1012',
         'HOST': 'localhost',
         'PORT': '3306',
     }
