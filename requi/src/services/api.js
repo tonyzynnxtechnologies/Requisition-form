@@ -128,11 +128,6 @@ export const getRequisitions = async (params = {}) => {
   return response.data;
 };
 
-export const getAuditTrail = async (limit = 50) => {
-  const response = await api.get("/requisitions/audit-trail/", { params: { limit } });
-  return response.data;
-};
-
 export const getRequisitionDetail = async (id) => {
   const response = await api.get(`/requisitions/${id}/`);
   return response.data;

@@ -57,9 +57,7 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
     setSuccess('');
     
     // Validate comment if action is a rejection or return
-    // Exception: HOD can return to staff without comment when ED returned it to HOD
-    const isReturnByHodFromEdReturn = actionType === 'returned_by_hod' && requisition.status === 'returned_to_hod';
-    if ((actionType.includes('reject') || actionType.includes('return')) && !comment.trim() && !isReturnByHodFromEdReturn) {
+    if ((actionType.includes('reject') || actionType.includes('return')) && !comment.trim()) {
       setError('A comment is required when rejecting or returning a requisition.');
       return;
     }
@@ -453,7 +451,7 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ color: '#6b7280' }}>REQ ID</span>
-                    <span style={{ fontWeight: '600', color: '#111827' }}>{requisition.id}</span>
+                    <span style={{ fontWeight: '600', color: '#111827' }}>#{requisition.id}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ color: '#6b7280' }}>SUBMITTED BY</span>
@@ -677,7 +675,7 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
             <h1 style={{ fontSize: '24px', margin: '0 0 6px 0', fontWeight: 'bold' }}>NAIPUNNYA COLLEGE</h1>
             <h2 style={{ fontSize: '18px', margin: '0 0 12px 0', fontWeight: '600', color: '#374151' }}>Material Requisition Form</h2>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#4b5563', marginTop: '10px' }}>
-              <span><strong>Requisition ID:</strong> {requisition.id}</span>
+              <span><strong>Requisition ID:</strong> #{requisition.id}</span>
               <span><strong>Date:</strong> {requisition.requisition_date}</span>
               <span><strong>Status:</strong> {requisition.status?.toUpperCase()}</span>
             </div>

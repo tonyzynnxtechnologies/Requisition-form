@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getDepartments, createDepartment, updateDepartment, deleteDepartment, getUsers } from '../../services/api';
-import { Building2, User, TriangleAlert, Search, Pencil, Trash2, CheckCircle } from 'lucide-react';
+import { Building2, User, TriangleAlert, Search, Pencil, Trash2 } from 'lucide-react';
 
 const Departments = ({ currentUser, onNavigate, onLogout }) => {
   const [departments, setDepartments] = useState([]);

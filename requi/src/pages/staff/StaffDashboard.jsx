@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getRequisitions } from '../../services/api';
-import { ArchiveRestore, Hourglass, SquareCheckBig } from 'lucide-react';
 
 const UserDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) => {
   const [requisitions, setRequisitions] = useState([]);
@@ -101,7 +100,7 @@ const UserDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout })
           <div style={{ flex: 1, minWidth: '200px', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
               <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', letterSpacing: '0.5px' }}>TOTAL SUBMITTED</div>
-              <div style={{ color: '#4b5563' }}><ArchiveRestore size={30} /></div>
+              <div style={{ color: '#4b5563' }}>📊</div>
             </div>
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>{stats.submitted}</div>
             <div style={{ fontSize: '13px', color: '#6b7280', fontWeight: '500' }}>Overall request history</div>
@@ -110,7 +109,7 @@ const UserDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout })
           <div style={{ flex: 1, minWidth: '200px', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
               <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', letterSpacing: '0.5px' }}>PENDING REVIEW</div>
-              <div style={{ color: '#f97316' }}><Hourglass size={30} /></div>
+              <div style={{ color: '#f97316' }}>⏳</div>
             </div>
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f97316', marginBottom: '8px' }}>{stats.pending}</div>
             <div style={{ fontSize: '13px', color: '#6b7280', fontWeight: '500' }}>Awaiting decision</div>
@@ -119,7 +118,7 @@ const UserDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout })
           <div style={{ flex: 1, minWidth: '200px', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
               <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', letterSpacing: '0.5px' }}>APPROVED</div>
-              <div style={{ color: '#16a34a' }}><SquareCheckBig size={30} /></div>
+              <div style={{ color: '#16a34a' }}>✅</div>
             </div>
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#16a34a', marginBottom: '8px' }}>{stats.approved}</div>
             <div style={{ fontSize: '13px', color: '#6b7280', fontWeight: '500' }}>Processed and fulfilled</div>
@@ -167,7 +166,7 @@ const UserDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout })
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                      <td style={{ padding: '16px 24px', fontWeight: '500', color: '#111827' }}>{req.id}</td>
+                      <td style={{ padding: '16px 24px', fontWeight: '500', color: '#111827' }}>#{req.id}</td>
                       <td style={{ padding: '16px 24px', color: '#374151', fontWeight: '500' }}>{req.programme_name}</td>
                       <td style={{ padding: '16px 24px', color: '#6b7280', textTransform: 'capitalize' }}>{req.requisition_type}</td>
                       <td style={{ padding: '16px 24px', color: '#6b7280' }}>{req.requisition_date}</td>
