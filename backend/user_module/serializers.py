@@ -65,6 +65,7 @@ class RequisitionListSerializer(serializers.ModelSerializer):
     club_name = serializers.CharField(source='club.name', read_only=True)
     item_count = serializers.IntegerField(source='items.count', read_only=True)
     total_estimated_cost = serializers.SerializerMethodField()
+    id = serializers.SerializerMethodField()
 
     class Meta:
         model = Requisition
@@ -84,12 +85,16 @@ class RequisitionListSerializer(serializers.ModelSerializer):
             'requisition_date',
             'item_count',
             'total_estimated_cost',
+            'programme_datetime',
             'created_at',
             'updated_at'
         ]
 
     def get_total_estimated_cost(self, obj):
         return sum((item.estimated_cost or 0) * (item.required_quantity or 0) for item in obj.items.all())
+
+    def get_id(self, obj):
+        return f"REQ-{obj.id}"
 
 
 
@@ -101,6 +106,7 @@ class RequisitionDetailSerializer(serializers.ModelSerializer):
     items = RequisitionItemSerializer(many=True, read_only=True)
     documents = RequisitionDocumentSerializer(many=True, read_only=True)
     actions = RequisitionActionSerializer(many=True, read_only=True)
+    id = serializers.SerializerMethodField()
 
     class Meta:
         model = Requisition
@@ -128,6 +134,9 @@ class RequisitionDetailSerializer(serializers.ModelSerializer):
             'documents',
             'actions',
         ]
+
+    def get_id(self, obj):
+        return f"REQ-{obj.id}"
 
 
 
@@ -220,10 +229,6 @@ class RequisitionActionWriteSerializer(serializers.Serializer):
         comment = data.get('comment', '')
         priority = data.get('priority')
         
-        if 'returned' in action and not comment.strip():
-            raise serializers.ValidationError(
-                {'comment': 'A comment is required when returning a requisition.'}
-            )
         if action == 'approved_by_hod' and not priority:
             raise serializers.ValidationError(
                 {'priority': 'Priority level is required when HOD approves.'}

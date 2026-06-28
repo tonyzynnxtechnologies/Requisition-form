@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getDepartments, getUsers, getRequisitions } from '../../services/api';
+import { Building2, Users2, BriefcaseBusiness } from 'lucide-react';
 
 const EdDepartments = ({ currentUser, onNavigate }) => {
   const [departments, setDepartments] = useState([]);
@@ -33,7 +34,7 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
         const approvedCount = deptReqs.filter(r => r.status?.toLowerCase() === 'approved').length;
         const rejectedCount = deptReqs.filter(r => r.status?.toLowerCase() === 'rejected').length;
         const totalClosed = approvedCount + rejectedCount;
-        const approvalRate = totalClosed > 0 ? Math.round((approvedCount / totalClosed) * 100) : 95;
+        const approvalRate = totalClosed > 0 ? Math.round((approvedCount / totalClosed) * 100) : null;
 
         // Determine administrative vs academic
         const lowerName = dept.name.toLowerCase();
@@ -41,15 +42,27 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
           ? 'Administrative' 
           : 'Academic';
 
-        // Budget status
-        const totalSpent = deptReqs
-          .filter(r => r.status?.toLowerCase() === 'approved')
-          .reduce((sum, r) => sum + parseFloat(r.total_estimated_cost || 0), 0);
-        const budgetStatus = totalSpent > 100000 ? 'UTILIZED' : 'ACTIVE';
+        // Budget status: ACTIVE only if dept has an ongoing requisition
+        // (submitted/in-approval but programme date hasn't passed yet)
+        const now = new Date();
+        const hasOngoingReq = deptReqs.some(r => {
+          const status = r.status?.toLowerCase();
+          const isSubmitted = ['pending_hod', 'pending_ed', 'approved'].includes(status);
+          if (!isSubmitted) return false;
+          // Check if programme date hasn't passed yet
+          if (r.programme_datetime) {
+            return new Date(r.programme_datetime) >= now;
+          }
+          // Fallback to requisition_date if programme_datetime not set
+          if (r.requisition_date) {
+            return new Date(r.requisition_date) >= now;
+          }
+          return true; // If no date info, consider it ongoing
+        });
+        const budgetStatus = hasOngoingReq ? 'ACTIVE' : 'INACTIVE';
 
-        // Faculty & Support counts
+        // Faculty count
         const facultyCount = staffCount;
-        const supportCount = Math.max(1, Math.round(facultyCount * 0.15));
 
         return {
           id: dept.id,
@@ -60,8 +73,7 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
           approvalRate,
           type,
           budgetStatus,
-          faculty: facultyCount,
-          support: supportCount
+          faculty: facultyCount
         };
       });
 
@@ -108,7 +120,7 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
           </div>
         </div>
 
-        {/* Title */}
+        {/* Title 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
           <div>
             <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827', margin: '0 0 8px 0' }}>Institutional Departments</h1>
@@ -120,12 +132,12 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
           >
             Add Department
           </button>
-        </div>
+        </div>*/}
 
         {/* KPI Row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' }}>
           <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', gap: '16px', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}>🏢</div>
+            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}><Building2 size={30} /></div>
             <div>
               <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold' }}>TOTAL DEPARTMENTS</div>
               <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a' }}>{totalDepts}</div>
@@ -133,7 +145,7 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
           </div>
 
           <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', gap: '16px', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}>👥</div>
+            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}><Users2 size={30} /></div>
             <div>
               <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold' }}>ACTIVE HODS</div>
               <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a' }}>{activeHods}</div>
@@ -141,7 +153,7 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
           </div>
 
           <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', gap: '16px', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}>💼</div>
+            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}><BriefcaseBusiness size={30} /></div>
             <div>
               <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold' }}>TOTAL STAFF COUNT</div>
               <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a' }}>{totalStaff}</div>
@@ -189,11 +201,11 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
                   </div>
                   <div>
                     <div style={{ color: '#64748b', fontSize: '11px' }}>APPROVAL RATE</div>
-                    <div style={{ fontWeight: '600', color: '#16a34a', marginTop: '2px' }}>{dept.approvalRate}%</div>
+                    <div style={{ fontWeight: '600', color: dept.approvalRate !== null ? '#16a34a' : '#94a3b8', marginTop: '2px' }}>{dept.approvalRate !== null ? `${dept.approvalRate}%` : 'N/A'}</div>
                   </div>
                 </div>
                 <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '12px', textAlign: 'right' }}>
-                  <span style={{ color: '#064e3b', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }} onClick={() => onNavigate('EdRequisitions')}>View Requisitions &gt;</span>
+                  <span style={{ color: '#064e3b', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }} onClick={() => onNavigate('EdRequisitions', null, { deptFilter: dept.name })}>View Requisitions &gt;</span>
                 </div>
               </div>
             ))
@@ -215,15 +227,14 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
                   <th style={{ padding: '14px 24px', borderBottom: '1px solid #e2e8f0' }}>TYPE</th>
                   <th style={{ padding: '14px 24px', borderBottom: '1px solid #e2e8f0' }}>HOD</th>
                   <th style={{ padding: '14px 24px', borderBottom: '1px solid #e2e8f0' }}>FACULTY STAFF</th>
-                  <th style={{ padding: '14px 24px', borderBottom: '1px solid #e2e8f0' }}>SUPPORT STAFF</th>
                   <th style={{ padding: '14px 24px', borderBottom: '1px solid #e2e8f0' }}>BUDGET STATUS</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan="6" style={{ padding: '16px', textAlign: 'center' }}>Loading distribution matrix...</td></tr>
+                  <tr><td colSpan="5" style={{ padding: '16px', textAlign: 'center' }}>Loading distribution matrix...</td></tr>
                 ) : departments.length === 0 ? (
-                  <tr><td colSpan="6" style={{ padding: '16px', textAlign: 'center', color: '#64748b' }}>No data available.</td></tr>
+                  <tr><td colSpan="5" style={{ padding: '16px', textAlign: 'center', color: '#64748b' }}>No data available.</td></tr>
                 ) : (
                   departments.map((dept) => (
                     <tr key={dept.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
@@ -231,11 +242,10 @@ const EdDepartments = ({ currentUser, onNavigate }) => {
                       <td style={{ padding: '16px 24px', color: '#475569' }}>{dept.type}</td>
                       <td style={{ padding: '16px 24px', color: '#475569' }}>{dept.hod}</td>
                       <td style={{ padding: '16px 24px', color: '#0f172a', fontWeight: '500' }}>{dept.faculty}</td>
-                      <td style={{ padding: '16px 24px', color: '#0f172a', fontWeight: '500' }}>{dept.support}</td>
                       <td style={{ padding: '16px 24px' }}>
                         <span style={{ 
-                          backgroundColor: dept.budgetStatus === 'UTILIZED' ? '#fee2e2' : '#dcfce7', 
-                          color: dept.budgetStatus === 'UTILIZED' ? '#ef4444' : '#16a34a', 
+                          backgroundColor: dept.budgetStatus === 'ACTIVE' ? '#dcfce7' : '#f1f5f9', 
+                          color: dept.budgetStatus === 'ACTIVE' ? '#16a34a' : '#94a3b8', 
                           padding: '4px 10px', 
                           borderRadius: '6px', 
                           fontSize: '11px', 

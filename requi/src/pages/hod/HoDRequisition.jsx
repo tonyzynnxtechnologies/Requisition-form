@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getRequisitions } from '../../services/api';
+import { getAcademicYear, isInAcademicYear } from '../../utils/academicYear';
 import { ClipboardList, FileDown, SquareCheckBig, RotateCcw, TriangleAlert, Eye } from 'lucide-react';
 
 const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisition }) => {
@@ -17,7 +18,7 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
   });
 
   // Filter states
-  const [timeframe, setTimeframe] = useState('This Month');
+  const [timeframe, setTimeframe] = useState('current');
   const [statusFilter, setStatusFilter] = useState('All');
 
   const handleView = onViewDetail || onViewRequisition || ((id) => alert(`Viewing Requisition ${id}`));
@@ -28,18 +29,9 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
       const response = await getRequisitions();
       const reqs = Array.isArray(response) ? response : (response?.data || []);
 
-      // Filter requests for HOD's department/club
-      const hodDeptName = currentUser?.departmant_name || currentUser?.department_name;
-      const hodClubName = currentUser?.club_name;
-
-      const filteredByDept = reqs.filter(r => {
-        if (r.requisition_type === 'department' && hodDeptName) {
-          return r.department_name === hodDeptName;
-        } else if (r.requisition_type === 'club' && hodClubName) {
-          return r.club_name === hodClubName;
-        }
-        return false;
-      });
+      // Backend already filters requisitions for HOD's department,
+      // so we use all returned data directly
+      const filteredByDept = reqs;
 
       setAllRequisitions(filteredByDept);
 
@@ -77,6 +69,17 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
   useEffect(() => {
     let result = [...allRequisitions];
 
+    // Apply academic year timeframe filter
+    if (timeframe !== 'all') {
+      const currentAY = getAcademicYear(new Date());
+      const targetStartYear = timeframe === 'current' ? currentAY.startYear : currentAY.startYear - 1;
+      result = result.filter(r => {
+        const dateStr = r.requisition_date || r.created_at;
+        if (!dateStr) return false;
+        return isInAcademicYear(dateStr, targetStartYear);
+      });
+    }
+
     if (statusFilter !== 'All') {
       const sf = statusFilter.toLowerCase();
       if (sf === 'pending hod') {
@@ -91,10 +94,10 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
     }
 
     setFilteredReqs(result);
-  }, [statusFilter, allRequisitions]);
+  }, [statusFilter, timeframe, allRequisitions]);
 
-  // Needs review count (PENDING_HOD)
-  const needsReviewCount = allRequisitions.filter(r => r.status?.toLowerCase() === 'pending_hod').length;
+  // Needs review count (PENDING_HOD + RETURNED_TO_HOD)
+  const needsReviewCount = allRequisitions.filter(r => ['pending_hod', 'returned_to_hod'].includes(r.status?.toLowerCase())).length;
 
   const hodDeptDisplay = currentUser?.departmant_name || currentUser?.department_name || currentUser?.club_name || 'DEPARTMENT';
 
@@ -166,15 +169,21 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
         {/* Filters and Needs Review banner */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: '12px' }}>
-            <select
-              value={timeframe}
-              onChange={(e) => setTimeframe(e.target.value)}
-              style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', backgroundColor: 'white', outline: 'none' }}
-            >
-              <option>This Month</option>
-              <option>This Quarter</option>
-              <option>This Year</option>
-            </select>
+            {(() => {
+              const currentAY = getAcademicYear(new Date());
+              const prevAYStartYear = currentAY.startYear - 1;
+              return (
+                <select
+                  value={timeframe}
+                  onChange={(e) => setTimeframe(e.target.value)}
+                  style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', backgroundColor: 'white', outline: 'none' }}
+                >
+                  <option value="current">AY {currentAY.label}</option>
+                  <option value="previous">AY {prevAYStartYear}–{String(prevAYStartYear + 1).slice(-2)}</option>
+                  <option value="all">All Time</option>
+                </select>
+              );
+            })()}
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -217,10 +226,10 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
                 ) : (
                   filteredReqs.map((req) => {
                     const statusLower = req.status?.toLowerCase() || '';
-                    const isPendingHod = statusLower === 'pending_hod';
+                    const needsHodAction = statusLower === 'pending_hod' || statusLower === 'returned_to_hod';
                     return (
                       <tr key={req.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                        <td style={{ padding: '18px 24px', fontWeight: '500', color: '#16a34a' }}>#{req.id}</td>
+                        <td style={{ padding: '18px 24px', fontWeight: '500', color: '#16a34a' }}>{req.id}</td>
                         <td style={{ padding: '18px 24px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#e0e7ff', color: '#4f46e5', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold', fontSize: '10px' }}>
@@ -250,9 +259,14 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
                               Approved
                             </span>
                           )}
-                          {statusLower?.startsWith('returned') && (
+                          {statusLower === 'returned_to_hod' && (
+                            <span style={{ backgroundColor: '#fef3c7', color: '#d97706', padding: '4px 12px', borderRadius: '9999px', fontSize: '12px', fontWeight: '500' }}>
+                              Returned by ED
+                            </span>
+                          )}
+                          {statusLower === 'returned_to_staff' && (
                             <span style={{ backgroundColor: '#eff6ff', color: '#2563eb', padding: '4px 12px', borderRadius: '9999px', fontSize: '12px', fontWeight: '500' }}>
-                              Returned
+                              Returned to Staff
                             </span>
                           )}
                           {statusLower === 'rejected' && (
@@ -263,7 +277,7 @@ const HodRequisitions = ({ currentUser, onNavigate, onViewDetail, onViewRequisit
                         </td>
                         <td style={{ padding: '18px 24px', textAlign: 'right' }}>
                           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px' }}>
-                            {isPendingHod ? (
+                            {needsHodAction ? (
                               <button
                                 onClick={() => handleView(req.id)}
                                 style={{ backgroundColor: 'white', border: '1px solid #16a34a', color: '#16a34a', borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' }}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getRequisitions, deleteRequisition } from '../../services/api';
+import { Search } from 'lucide-react';
 
 const MyRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition }) => {
   const [requisitions, setRequisitions] = useState([]);
@@ -118,7 +119,7 @@ const MyRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition }
         {/* Filters */}
         <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
           <div style={{ flex: 2, minWidth: '200px', position: 'relative' }}>
-            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}>🔍</span>
+            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}><Search size={20} /></span>
             <input 
               type="text" 
               value={search} 
@@ -179,7 +180,7 @@ const MyRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition }
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                      <td style={{ padding: '14px 24px', color: '#6b7280', fontWeight: '500' }}>#{req.id}</td>
+                      <td style={{ padding: '14px 24px', color: '#6b7280', fontWeight: '500' }}>{req.id}</td>
                       <td style={{ padding: '14px 24px', fontWeight: '500', color: '#111827' }}>{req.programme_name}</td>
                       <td style={{ padding: '14px 24px', color: '#6b7280', textTransform: 'capitalize' }}>{req.requisition_type}</td>
                       <td style={{ padding: '14px 24px' }}>{getPriorityBadge(req.priority)}</td>

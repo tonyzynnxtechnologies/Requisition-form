@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { getUsers, getDepartments } from '../../services/api';
+import { Users, Shield, GraduationCap, Search, Eye } from 'lucide-react';
 
 const EdUsers = ({ currentUser, onNavigate }) => {
   const [users, setUsers] = useState([]);
@@ -98,7 +99,7 @@ const EdUsers = ({ currentUser, onNavigate }) => {
           </div>
         </div>
 
-        {/* Title Section */}
+        {/* Title Section 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
           <div>
             <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827', margin: '0 0 8px 0' }}>Institutional User Directory</h1>
@@ -110,13 +111,13 @@ const EdUsers = ({ currentUser, onNavigate }) => {
           >
             <span>👤+</span> Invite User
           </button>
-        </div>
+        </div>*/}
 
         {/* Stats Row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' }}>
           {/* Card 1 */}
           <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', gap: '16px', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}>👥</div>
+            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}><Users size={30} /></div>
             <div>
               <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold' }}>TOTAL USERS</div>
               <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a' }}>{totalCount}</div>
@@ -125,7 +126,7 @@ const EdUsers = ({ currentUser, onNavigate }) => {
 
           {/* Card 2 */}
           <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', gap: '16px', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}>🛡</div>
+            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}><Shield size={30} /></div>
             <div>
               <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold' }}>ACTIVE STAFF</div>
               <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a' }}>{activeStaffCount}</div>
@@ -134,7 +135,7 @@ const EdUsers = ({ currentUser, onNavigate }) => {
 
           {/* Card 3 */}
           <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', gap: '16px', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}>🎓</div>
+            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#e8f5e9', color: '#2e7d32', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px' }}><GraduationCap size={30} /></div>
             <div>
               <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold' }}>HODS</div>
               <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#0f172a' }}>{hodsCount}</div>
@@ -146,7 +147,7 @@ const EdUsers = ({ currentUser, onNavigate }) => {
         {/* Filter & Search Bar Row */}
         <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center', backgroundColor: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
           <div style={{ flex: 1.5, minWidth: '200px', position: 'relative' }}>
-            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>🔍</span>
+            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}><Search size={20} color='black' /></span>
             <input 
               type="text" 
               value={searchQuery}
@@ -243,7 +244,7 @@ const EdUsers = ({ currentUser, onNavigate }) => {
                           </span>
                         </td>
                         <td style={{ padding: '16px 24px', textAlign: 'right', color: '#94a3b8' }}>
-                          <span style={{ cursor: 'pointer' }} onClick={() => setSelectedUserForModal(user)}>👁️</span>
+                          <span style={{ cursor: 'pointer' }} onClick={() => setSelectedUserForModal(user)}><Eye size={20} /></span>
                         </td>
                       </tr>
                     );

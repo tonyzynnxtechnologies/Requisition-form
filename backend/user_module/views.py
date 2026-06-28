@@ -57,6 +57,18 @@ def _success(message, data=None, status_code=status.HTTP_200_OK):
     return Response(payload, status=status_code)
 
 
+def resolve_pk(pk):
+    if isinstance(pk, str) and pk.startswith('REQ-'):
+        try:
+            return int(pk.split('-')[1])
+        except (ValueError, IndexError):
+            pass
+    try:
+        return int(pk)
+    except ValueError:
+        return pk
+
+
 def send_requisition_notification(requisition, comment=""):
     from admin_panel.models import SystemSetting, User
     from django.core.mail import send_mail
@@ -113,7 +125,7 @@ def send_requisition_notification(requisition, comment=""):
     for name, email in recipients:
         try:
             kwargs = {
-                'requisition_id': str(requisition.id),
+                'requisition_id': f"REQ-{requisition.id}",
                 'programme_name': str(requisition.programme_name),
                 'status': str(status_display),
                 'comment': str(comment),
@@ -212,7 +224,7 @@ class RequisitionListCreateView(APIView):
 
         return _success(
             'Requisition created as draft.',
-            {'id': requisition.id},
+            {'id': f"REQ-{requisition.id}"},
             status.HTTP_201_CREATED
         )
 
@@ -230,8 +242,8 @@ class RequisitionDetailView(APIView):
 
     def _get_requisition(self, pk):
         try:
-            return Requisition.objects.get(pk=pk)
-        except Requisition.DoesNotExist:
+            return Requisition.objects.get(pk=resolve_pk(pk))
+        except (Requisition.DoesNotExist, ValueError):
             return None
 
     def get(self, request, pk):
@@ -315,8 +327,8 @@ class RequisitionSubmitView(APIView):
         user = request.user
 
         try:
-            requisition = Requisition.objects.get(pk=pk, created_by=user)
-        except Requisition.DoesNotExist:
+            requisition = Requisition.objects.get(pk=resolve_pk(pk), created_by=user)
+        except (Requisition.DoesNotExist, ValueError):
             return _error('Requisition not found.', status.HTTP_404_NOT_FOUND)
 
         if requisition.status not in EDITABLE_STATUSES:
@@ -381,8 +393,8 @@ class RequisitionActionView(APIView):
         role = getattr(user, 'role', None)
 
         try:
-            requisition = Requisition.objects.get(pk=pk)
-        except Requisition.DoesNotExist:
+            requisition = Requisition.objects.get(pk=resolve_pk(pk))
+        except (Requisition.DoesNotExist, ValueError):
             return _error('Requisition not found.', status.HTTP_404_NOT_FOUND)
 
         serializer = RequisitionActionWriteSerializer(data=request.data)
@@ -420,7 +432,13 @@ class RequisitionActionView(APIView):
                 f'but current status is "{requisition.status}".'
             )
 
-        # 4. Apply
+        # 4. Comment requirement checks
+        if action == 'returned_by_ed' and not comment.strip():
+            return _error('A comment is required when ED returns a requisition.')
+        if action == 'returned_by_hod' and requisition.status == 'pending_hod' and not comment.strip():
+            return _error('A comment is required when returning a requisition to staff.')
+
+        # 5. Apply
         new_status = ACTION_STATUS_MAP[action]
         if action == 'returned_by_ed' and requisition.requisition_type == 'club':
             new_status = 'returned_to_staff'
@@ -461,8 +479,8 @@ class RequisitionDocumentUploadView(APIView):
         user = request.user
 
         try:
-            requisition = Requisition.objects.get(pk=pk)
-        except Requisition.DoesNotExist:
+            requisition = Requisition.objects.get(pk=resolve_pk(pk))
+        except (Requisition.DoesNotExist, ValueError):
             return _error('Requisition not found.', status.HTTP_404_NOT_FOUND)
 
         if requisition.created_by != user:
@@ -493,8 +511,8 @@ class RequisitionDocumentUploadView(APIView):
         user = request.user
 
         try:
-            doc = RequisitionDocument.objects.get(pk=doc_id, requisition__id=pk)
-        except RequisitionDocument.DoesNotExist:
+            doc = RequisitionDocument.objects.get(pk=doc_id, requisition__id=resolve_pk(pk))
+        except (RequisitionDocument.DoesNotExist, ValueError):
             return _error('Document not found.', status.HTTP_404_NOT_FOUND)
 
         if doc.requisition.created_by != user:
@@ -516,10 +534,63 @@ class RequisitionHistoryView(APIView):
 
     def get(self, request, pk):
         try:
-            requisition = Requisition.objects.get(pk=pk)
-        except Requisition.DoesNotExist:
+            requisition = Requisition.objects.get(pk=resolve_pk(pk))
+        except (Requisition.DoesNotExist, ValueError):
             return _error('Requisition not found.', status.HTTP_404_NOT_FOUND)
 
         actions = requisition.actions.select_related('acted_by').order_by('acted_at')
         serializer = RequisitionActionSerializer(actions, many=True)
         return Response({'success': True, 'data': serializer.data})
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  Institutional Audit Trail (ED / Admin only)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class AuditTrailView(APIView):
+    """
+    GET /requisitions/audit-trail/  → Returns all recent actions across the institution.
+    Only accessible by ED and Admin users.
+    """
+
+    def get(self, request):
+        print(">>>>>>>> AUDIT TRAIL VIEW HIT <<<<<<<<")
+        user = request.user
+        role = getattr(user, 'role', None)
+
+        if role not in ('ed', 'admin'):
+            return _error('Only ED and Admin can access the audit trail.', status.HTTP_403_FORBIDDEN)
+
+        # Get recent actions across all requisitions
+        limit = int(request.query_params.get('limit', 50))
+        limit = min(limit, 200)  # Cap at 200
+
+        actions = RequisitionAction.objects.select_related(
+            'acted_by', 'requisition', 'requisition__department', 'requisition__club'
+        ).order_by('-acted_at')[:limit]
+
+        data = []
+        for act in actions:
+            req = act.requisition
+            entity_name = ''
+            if req.requisition_type == 'department' and req.department:
+                entity_name = req.department.name
+            elif req.requisition_type == 'club' and req.club:
+                entity_name = req.club.name
+
+            data.append({
+                'id': act.id,
+                'action': act.action,
+                'action_display': act.get_action_display(),
+                'acted_by_name': act.acted_by.name if act.acted_by else 'System',
+                'acted_by_role': act.acted_by.role if act.acted_by else '',
+                'comment': act.comment,
+                'acted_at': act.acted_at.isoformat(),
+                'requisition_id': req.id,
+                'programme_name': req.programme_name,
+                'requisition_type': req.requisition_type,
+                'entity_name': entity_name,
+                'requisition_status': req.status,
+            })
+
+        return Response({'success': True, 'data': data})

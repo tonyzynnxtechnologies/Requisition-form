@@ -93,6 +93,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
     departmant_name = serializers.CharField(source='department.name', read_only=True)
+    club_name = serializers.CharField(source='club.name', read_only=True)
 
     class Meta:
         model = User
@@ -104,7 +105,9 @@ class UserSerializer(serializers.ModelSerializer):
             'role', 
             'profile_pic', 
             'department', 
-            'departmant_name', 
+            'departmant_name',
+            'club',
+            'club_name',
             'is_active', 
             'created_at', 
             'updated_at' 

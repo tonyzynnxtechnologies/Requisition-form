@@ -249,7 +249,7 @@ const AllRequisitions = ({ currentUser, onNavigate, onLogout, onViewRequisition 
                     const statusStyle = getStatusStyle(req.status);
                     return (
                       <tr key={req.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                        <td style={{ padding: '16px 24px', fontWeight: '500', color: '#111827' }}>#{req.id}</td>
+                        <td style={{ padding: '16px 24px', fontWeight: '500', color: '#111827' }}>{req.id}</td>
                         <td style={{ padding: '16px 24px' }}>
                           <div style={{ fontWeight: '500', color: '#111827', marginBottom: '4px' }}>{req.programme_name}</div>
                           <div style={{ fontSize: '12px', color: '#6b7280' }}>{deptOrClubName || 'General'}</div>
