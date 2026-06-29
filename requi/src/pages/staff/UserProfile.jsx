@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import Sidebar from '../../components/Sidebar';
-import { getMediaUrl, uploadProfilePic, deleteProfilePic } from '../../services/api';
-import { PenBox, Camera } from "lucide-react";
+import { getMediaUrl, uploadProfilePic, deleteProfilePic, uploadSignature, deleteSignature } from '../../services/api';
+import { PenBox, Camera, FileSignature } from "lucide-react";
 
 const UserProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
   const [emailAlerts, setEmailAlerts] = useState(true);
   const [browserAlerts, setBrowserAlerts] = useState(false);
   const [monthlyDigest, setMonthlyDigest] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [sigUploading, setSigUploading] = useState(false);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -46,6 +47,41 @@ const UserProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
 
   const handleEditProfile = () => {
     alert('Profile editor is in review. Field changes are currently disabled.');
+  };
+
+  const handleSignatureUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setSigUploading(true);
+    try {
+      const res = await uploadSignature(file);
+      if (res.success) {
+        if (onUpdateUser) onUpdateUser({ ...currentUser, signature: res.signature });
+        alert('Signature updated successfully!');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to upload signature.');
+    } finally {
+      setSigUploading(false);
+    }
+  };
+
+  const handleRemoveSignature = async () => {
+    if (!window.confirm('Are you sure you want to remove your signature?')) return;
+    setSigUploading(true);
+    try {
+      const res = await deleteSignature();
+      if (res.success) {
+        if (onUpdateUser) onUpdateUser({ ...currentUser, signature: null });
+        alert('Signature removed successfully!');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to remove signature.');
+    } finally {
+      setSigUploading(false);
+    }
   };
 
   const initials = currentUser?.name
@@ -269,6 +305,74 @@ const UserProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
                 </div>
               </div>
             </div>
+
+            {/* Digital Signature Card — only for staff, not admin */}
+            {currentUser?.role !== 'admin' && (
+            <div style={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #e5e7eb', paddingBottom: '12px' }}>
+                <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <FileSignature size={18} /> Digital Signature
+                </h2>
+              </div>
+              <p style={{ color: '#6b7280', fontSize: '13px', margin: '0 0 16px 0', lineHeight: '1.5' }}>
+                Upload your signature image. This will be automatically attached to requisitions you submit.
+              </p>
+
+              {/* Signature Preview */}
+              <div style={{
+                border: '2px dashed #d1d5db', borderRadius: '8px', padding: '24px',
+                textAlign: 'center', backgroundColor: '#f9fafb', marginBottom: '16px', minHeight: '80px',
+                display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'
+              }}>
+                {sigUploading ? (
+                  <div style={{ color: '#6b7280', fontSize: '14px' }}>⏳ Uploading...</div>
+                ) : currentUser?.signature ? (
+                  <img
+                    src={getMediaUrl(currentUser.signature)}
+                    alt="Your Signature"
+                    style={{ maxWidth: '200px', maxHeight: '80px', objectFit: 'contain' }}
+                  />
+                ) : (
+                  <div style={{ color: '#9ca3af', fontSize: '13px' }}>No signature uploaded yet</div>
+                )}
+              </div>
+
+              {/* Upload / Remove Buttons */}
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <label
+                  htmlFor="signature-upload"
+                  style={{
+                    padding: '8px 16px', backgroundColor: '#111827', color: 'white',
+                    border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '500',
+                    cursor: sigUploading ? 'not-allowed' : 'pointer', opacity: sigUploading ? 0.6 : 1,
+                    display: 'inline-block'
+                  }}
+                >
+                  {currentUser?.signature ? 'Replace Signature' : 'Upload Signature'}
+                </label>
+                <input
+                  id="signature-upload"
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg"
+                  onChange={handleSignatureUpload}
+                  style={{ display: 'none' }}
+                  disabled={sigUploading}
+                />
+                {currentUser?.signature && (
+                  <button
+                    onClick={handleRemoveSignature}
+                    disabled={sigUploading}
+                    style={{
+                      background: 'none', border: 'none', color: '#ef4444',
+                      fontSize: '13px', fontWeight: '600', cursor: 'pointer', textDecoration: 'underline'
+                    }}
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            </div>
+            )}
           </div>
         </div>
       </div>

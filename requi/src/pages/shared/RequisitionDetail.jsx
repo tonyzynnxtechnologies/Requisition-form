@@ -5,7 +5,8 @@ import {
   submitRequisition,
   performRequisitionAction,
   uploadDocument,
-  deleteDocument
+  deleteDocument,
+  getMediaUrl
 } from '../../services/api';
 
 const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId }) => {
@@ -441,6 +442,63 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
                   </div>
                 )}
               </div>
+
+              {/* Signatures Card */}
+              {(requisition.staff_signature || requisition.hod_signature || requisition.ed_signature) && (
+                <div style={{ backgroundColor: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '28px' }}>
+                  <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', margin: '0 0 20px 0' }}>Signatures</h2>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '20px' }}>
+                    
+                    {/* Staff Signature */}
+                    {requisition.staff_sign_name && (
+                      <div style={{ textAlign: 'center', padding: '16px', border: '1px solid #e5e7eb', borderRadius: '10px', backgroundColor: '#fafafa' }}>
+                        <div style={{ fontSize: '11px', color: '#6b7280', fontWeight: '600', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Prepared By</div>
+                        {requisition.staff_signature ? (
+                          <img src={getMediaUrl(requisition.staff_signature)} alt="Staff Signature" style={{ maxWidth: '150px', maxHeight: '60px', objectFit: 'contain', marginBottom: '8px' }} />
+                        ) : (
+                          <div style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d1d5db', fontStyle: 'italic', fontSize: '13px' }}>No image</div>
+                        )}
+                        <div style={{ fontSize: '13px', fontWeight: '600', color: '#111827' }}>{requisition.staff_sign_name}</div>
+                        <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>
+                          {requisition.staff_signed_at ? new Date(requisition.staff_signed_at).toLocaleDateString() : ''}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* HOD Signature — only for department requisitions */}
+                    {requisition.requisition_type === 'department' && requisition.hod_sign_name && (
+                      <div style={{ textAlign: 'center', padding: '16px', border: '1px solid #e5e7eb', borderRadius: '10px', backgroundColor: '#fafafa' }}>
+                        <div style={{ fontSize: '11px', color: '#6b7280', fontWeight: '600', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>HOD Recommendation</div>
+                        {requisition.hod_signature ? (
+                          <img src={getMediaUrl(requisition.hod_signature)} alt="HOD Signature" style={{ maxWidth: '150px', maxHeight: '60px', objectFit: 'contain', marginBottom: '8px' }} />
+                        ) : (
+                          <div style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d1d5db', fontStyle: 'italic', fontSize: '13px' }}>No image</div>
+                        )}
+                        <div style={{ fontSize: '13px', fontWeight: '600', color: '#111827' }}>{requisition.hod_sign_name}</div>
+                        <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>
+                          {requisition.hod_signed_at ? new Date(requisition.hod_signed_at).toLocaleDateString() : ''}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* ED Signature */}
+                    {requisition.ed_sign_name && (
+                      <div style={{ textAlign: 'center', padding: '16px', border: '1px solid #e5e7eb', borderRadius: '10px', backgroundColor: '#fafafa' }}>
+                        <div style={{ fontSize: '11px', color: '#6b7280', fontWeight: '600', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>ED Approval</div>
+                        {requisition.ed_signature ? (
+                          <img src={getMediaUrl(requisition.ed_signature)} alt="ED Signature" style={{ maxWidth: '150px', maxHeight: '60px', objectFit: 'contain', marginBottom: '8px' }} />
+                        ) : (
+                          <div style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d1d5db', fontStyle: 'italic', fontSize: '13px' }}>No image</div>
+                        )}
+                        <div style={{ fontSize: '13px', fontWeight: '600', color: '#111827' }}>{requisition.ed_sign_name}</div>
+                        <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>
+                          {requisition.ed_signed_at ? new Date(requisition.ed_signed_at).toLocaleDateString() : ''}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Right Column (Status details & Decision board) */}
@@ -674,7 +732,7 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
         {/* PRINT ONLY LAYOUT */}
         <div className="print-layout" style={{ color: '#111827' }}>
           <div style={{ textAlign: 'center', marginBottom: '30px', borderBottom: '2px solid #111827', paddingBottom: '20px' }}>
-            <h1 style={{ fontSize: '24px', margin: '0 0 6px 0', fontWeight: 'bold' }}>NAIPUNNYA COLLEGE</h1>
+            <h1 style={{ fontSize: '24px', margin: '0 0 6px 0', fontWeight: 'bold' }}>NAIPUNNYA SCHOOL OF MANAGEMENT</h1>
             <h2 style={{ fontSize: '18px', margin: '0 0 12px 0', fontWeight: '600', color: '#374151' }}>Material Requisition Form</h2>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#4b5563', marginTop: '10px' }}>
               <span><strong>Requisition ID:</strong> {requisition.id}</span>
@@ -736,27 +794,66 @@ const RequisitionDetail = ({ currentUser, onNavigate, onLogout, requisitionId })
           </table>
 
           {/* Workflow Signature blocks for print out */}
-          <div style={{ marginTop: '80px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '30px', textAlign: 'center', fontSize: '12px' }}>
+          <div style={{ marginTop: '60px', display: 'grid', gridTemplateColumns: requisition.requisition_type === 'club' ? '1fr 1fr' : '1fr 1fr 1fr', gap: '30px', textAlign: 'center', fontSize: '12px' }}>
             <div>
+              {requisition.staff_signature && (
+                <div style={{ marginBottom: '8px' }}>
+                  <img src={getMediaUrl(requisition.staff_signature)} alt="Staff Signature" style={{ maxWidth: '120px', maxHeight: '50px', objectFit: 'contain' }} />
+                </div>
+              )}
               <div style={{ borderTop: '1px solid #4b5563', paddingTop: '8px', margin: '0 20px' }}>
                 <p style={{ margin: 0, fontWeight: 'bold' }}>Prepared By</p>
-                <p style={{ margin: '4px 0 0 0', color: '#4b5563' }}>{requisition.created_by_name} (Staff)</p>
+                <p style={{ margin: '4px 0 0 0', color: '#4b5563' }}>
+                  {requisition.staff_sign_name || requisition.created_by_name} (Staff)
+                </p>
+                {requisition.staff_signed_at && (
+                  <p style={{ margin: '2px 0 0 0', color: '#9ca3af', fontSize: '10px' }}>
+                    {new Date(requisition.staff_signed_at).toLocaleDateString()}
+                  </p>
+                )}
               </div>
             </div>
+            {/* HOD block — only for department requisitions */}
+            {requisition.requisition_type === 'department' && (
             <div>
+              {requisition.hod_signature && (
+                <div style={{ marginBottom: '8px' }}>
+                  <img src={getMediaUrl(requisition.hod_signature)} alt="HOD Signature" style={{ maxWidth: '120px', maxHeight: '50px', objectFit: 'contain' }} />
+                </div>
+              )}
               <div style={{ borderTop: '1px solid #4b5563', paddingTop: '8px', margin: '0 20px' }}>
                 <p style={{ margin: 0, fontWeight: 'bold' }}>HOD Recommendation</p>
                 <p style={{ margin: '4px 0 0 0', color: '#4b5563' }}>
-                  {requisition.actions?.some(a => a.action === 'approved_by_hod') ? 'RECOMMENDED' : 'PENDING'}
+                  {requisition.hod_sign_name
+                    ? `${requisition.hod_sign_name} — RECOMMENDED`
+                    : 'PENDING'}
                 </p>
+                {requisition.hod_signed_at && (
+                  <p style={{ margin: '2px 0 0 0', color: '#9ca3af', fontSize: '10px' }}>
+                    {new Date(requisition.hod_signed_at).toLocaleDateString()}
+                  </p>
+                )}
               </div>
             </div>
+            )}
             <div>
+              {requisition.ed_signature && (
+                <div style={{ marginBottom: '8px' }}>
+                  <img src={getMediaUrl(requisition.ed_signature)} alt="ED Signature" style={{ maxWidth: '120px', maxHeight: '50px', objectFit: 'contain' }} />
+                </div>
+              )}
               <div style={{ borderTop: '1px solid #4b5563', paddingTop: '8px', margin: '0 20px' }}>
                 <p style={{ margin: 0, fontWeight: 'bold' }}>Executive Director Approval</p>
                 <p style={{ margin: '4px 0 0 0', color: '#4b5563' }}>
-                  {requisition.status === 'approved' ? 'APPROVED' : 'PENDING'}
+                  {requisition.ed_sign_name
+                    ? `${requisition.ed_sign_name} — APPROVED`
+                    : 'PENDING'}
                 </p>
+                {requisition.ed_signed_at && (
+                  <p style={{ margin: '2px 0 0 0', color: '#9ca3af', fontSize: '10px' }}>
+                    {new Date(requisition.ed_signed_at).toLocaleDateString()}
+                  </p>
+                )}
               </div>
             </div>
           </div>

@@ -133,6 +133,11 @@ export const getAuditTrail = async (limit = 50) => {
   return response.data;
 };
 
+export const getAnnualReportData = async (year) => {
+  const response = await api.get("/requisitions/annual-report/", { params: { year } });
+  return response.data;
+};
+
 export const getRequisitionDetail = async (id) => {
   const response = await api.get(`/requisitions/${id}/`);
   return response.data;
@@ -229,6 +234,24 @@ export const uploadProfilePic = async (file) => {
 export const deleteProfilePic = async () => {
   await getCSRFToken();
   const response = await api.delete("/profile-pic/");
+  return response.data;
+};
+
+// ─── Signature ────────────────────────────────────────────────────────────────
+
+export const uploadSignature = async (file) => {
+  await getCSRFToken();
+  const formData = new FormData();
+  formData.append("signature", file);
+  const response = await api.post("/signature/", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+};
+
+export const deleteSignature = async () => {
+  await getCSRFToken();
+  const response = await api.delete("/signature/");
   return response.data;
 };
 

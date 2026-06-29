@@ -23,6 +23,7 @@ import EdUsers from "./pages/ed/EdUsers";
 import EdDepartments from "./pages/ed/EdDepartments";
 import EdClubs from "./pages/ed/EdClubs";
 import EdProfile from "./pages/ed/EdProfile";
+import AnnualReport from "./pages/ed/AnnualReport";
 
 import RequisitionDetail from "./pages/shared/RequisitionDetail";
 
@@ -210,6 +211,8 @@ function App() {
       case "EdProfile":
       case "Ed_Profile":
         return <EdProfile currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onUpdateUser={(u) => setCurrentUser(u)} />;
+      case "AnnualReport":
+        return <AnnualReport currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} />;
       case "Dashboard":
       default:
         return <EdDashboard currentUser={currentUser} onNavigate={handleNavigate} onLogout={handleLogout} onViewRequisition={handleViewRequisition} />;

@@ -44,14 +44,19 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
       const prevMonthTotals = getMonthlyTotals(reqs, prevAYStartYear);
       setPrevMonthlyData(prevMonthTotals);
 
-      // Current month comparison
+      // Current month vs previous month comparison
       const now = new Date();
       const currentAYIdx = getAYMonthIndex(now);
       const currentMonthLabel = AY_MONTH_LABELS[currentAYIdx];
+      const prevMonthIdx = currentAYIdx > 0 ? currentAYIdx - 1 : 11;
+      const prevMonthLabel = AY_MONTH_LABELS[prevMonthIdx];
+      // If prevMonthIdx wraps to previous AY (i.e. current is JUN), use prevAY data
+      const prevMonthValue = currentAYIdx > 0 ? monthTotals[prevMonthIdx] : prevMonthTotals[prevMonthIdx];
       setCurrentMonthStats({
         current: monthTotals[currentAYIdx],
-        previous: prevMonthTotals[currentAYIdx],
+        previous: prevMonthValue,
         monthLabel: currentMonthLabel,
+        prevMonthLabel: prevMonthLabel,
       });
 
       setStats({
@@ -97,12 +102,12 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ textAlign: 'right' }}>
               <div style={{ color: '#111827', fontSize: '14px', fontWeight: '600' }}>
-                {currentUser?.name || 'Fr. Thomas Kurian'}
+                {currentUser?.name || 'Executive Director'}
               </div>
               <div style={{ color: '#6b7280', fontSize: '11px', fontWeight: 'bold' }}>EXECUTIVE DIRECTOR</div>
             </div>
             <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#064e3b', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '14px', fontWeight: 'bold' }}>
-              {currentUser?.name ? currentUser.name.split(' ').map(n => n.charAt(0)).join('').toUpperCase() : 'TK'}
+              {currentUser?.name ? currentUser.name.split(' ').map(n => n.charAt(0)).join('').toUpperCase() : 'ED'}
             </div>
           </div>
         </div>
@@ -111,7 +116,7 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
         <div style={{ marginBottom: '32px' }}>
           <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#111827', margin: '0 0 8px 0' }}>Executive Overview</h1>
           <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>
-            Welcome back, {currentUser?.name || 'Fr. Thomas'}. You have <span style={{ color: '#dc2626', fontWeight: 'bold' }}>{stats.pendingCount} pending requisitions</span> requiring final sign-off.
+            Welcome back, {currentUser?.name || 'Director'}. You have <span style={{ color: '#dc2626', fontWeight: 'bold' }}>{stats.pendingCount} pending requisitions</span> requiring final sign-off.
           </p>
         </div>
 
@@ -152,7 +157,7 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
             );
           })()}
 
-          {/* Card 3 — This Month vs Same Month Last AY */}
+          {/* Card 3 — This Month vs Previous Month */}
           {(() => {
             const mPctChange = currentMonthStats.previous > 0
               ? (((currentMonthStats.current - currentMonthStats.previous) / currentMonthStats.previous) * 100).toFixed(1)
@@ -171,7 +176,7 @@ const EdDashboard = ({ currentUser, onNavigate, onViewRequisition, onLogout }) =
                 <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 'bold', marginBottom: '6px', letterSpacing: '0.5px' }}>{currentMonthStats.monthLabel} EXPENDITURE</div>
                 <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#0f172a' }}>{formatRupee(currentMonthStats.current)}</div>
                 <div style={{ fontSize: '11px', color: '#64748b', marginTop: '6px' }}>
-                  vs. {formatRupee(currentMonthStats.previous)} in {currentMonthStats.monthLabel} last AY
+                  vs. {formatRupee(currentMonthStats.previous)} in {currentMonthStats.prevMonthLabel || 'prev month'}
                 </div>
               </div>
             );

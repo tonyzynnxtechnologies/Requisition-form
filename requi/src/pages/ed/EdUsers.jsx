@@ -89,12 +89,12 @@ const EdUsers = ({ currentUser, onNavigate }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ textAlign: 'right' }}>
               <div style={{ color: '#111827', fontSize: '14px', fontWeight: '600' }}>
-                {currentUser?.name || 'Fr. Thomas Kurian'}
+                {currentUser?.name || 'Executive Director'}
               </div>
               <div style={{ color: '#6b7280', fontSize: '11px', fontWeight: 'bold' }}>EXECUTIVE DIRECTOR</div>
             </div>
             <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#064e3b', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '14px', fontWeight: 'bold' }}>
-              {currentUser?.name ? currentUser.name.split(' ').map(n => n.charAt(0)).join('').toUpperCase() : 'TK'}
+              {currentUser?.name ? currentUser.name.split(' ').map(n => n.charAt(0)).join('').toUpperCase() : 'ED'}
             </div>
           </div>
         </div>

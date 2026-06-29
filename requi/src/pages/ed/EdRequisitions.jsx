@@ -104,12 +104,12 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDep
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ textAlign: 'right' }}>
               <div style={{ color: '#111827', fontSize: '14px', fontWeight: '600' }}>
-                {currentUser?.name || 'Fr. Thomas Kurian'}
+                {currentUser?.name || 'Executive Director'}
               </div>
               <div style={{ color: '#6b7280', fontSize: '11px', fontWeight: 'bold' }}>EXECUTIVE DIRECTOR</div>
             </div>
             <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#064e3b', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '14px', fontWeight: 'bold' }}>
-              {currentUser?.name ? currentUser.name.split(' ').map(n => n.charAt(0)).join('').toUpperCase() : 'TK'}
+              {currentUser?.name ? currentUser.name.split(' ').map(n => n.charAt(0)).join('').toUpperCase() : 'ED'}
             </div>
           </div>
         </div>
@@ -121,7 +121,7 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDep
             <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>Comprehensive oversight of all departmental and club resource requests.</p>
           </div>
           <button
-            onClick={() => alert('Exporting Annual CAPEX Expenditure Report... (PDF)')}
+            onClick={() => onNavigate('AnnualReport')}
             style={{ backgroundColor: '#064e3b', color: 'white', border: 'none', borderRadius: '8px', padding: '12px 20px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}
           >
             Export Annual Report
@@ -134,11 +134,10 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDep
           <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
             <div>
               <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold', marginBottom: '8px', letterSpacing: '0.5px' }}>TOTAL REQUISITIONS</div>
-              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#0f172a', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#0f172a' }}>
                 {allRequisitions.length}
-                <span style={{ fontSize: '12px', color: '#16a34a', fontWeight: '600' }}>+12%</span>
               </div>
-              <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>vs last year</div>
+              <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>This academic year</div>
             </div>
             <span style={{ fontSize: '24px', color: '#16a34a' }}><ChartLine size={30} /></span>
           </div>
@@ -162,7 +161,7 @@ const EdRequisitions = ({ currentUser, onNavigate, onViewRequisition, initialDep
           <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
             <div>
               <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold', marginBottom: '8px', letterSpacing: '0.5px' }}>INSTITUTIONAL EXPENDITURE</div>
-              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#0f172a' }}>{totalApprovedValue > 0 ? formattedExp : '₹12.45 L'}</div>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#0f172a' }}>{formattedExp}</div>
               <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Total approved value</div>
             </div>
             <span style={{ fontSize: '24px', color: '#059669' }}><IndianRupee size={30} /></span>

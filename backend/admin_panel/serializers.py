@@ -82,6 +82,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'role', 
             'department', 
             'profile_pic', 
+            'signature',
             'is_active' 
         ]
 
@@ -104,6 +105,7 @@ class UserSerializer(serializers.ModelSerializer):
             'email', 
             'role', 
             'profile_pic', 
+            'signature',
             'department', 
             'departmant_name',
             'club',

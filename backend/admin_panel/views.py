@@ -89,7 +89,8 @@ class LoginView(APIView):
                     "department_name": authenticated_user.department.name if authenticated_user.department else None,
                     "club": authenticated_user.club.id if authenticated_user.club else None,
                     "club_name": authenticated_user.club.name if authenticated_user.club else None,
-                    "profile_pic": authenticated_user.profile_pic.url if authenticated_user.profile_pic else None
+                    "profile_pic": authenticated_user.profile_pic.url if authenticated_user.profile_pic else None,
+                    "signature": authenticated_user.signature.url if authenticated_user.signature else None
                 }
             }
         )
@@ -126,6 +127,7 @@ class CurrentUserView(APIView):
                 "club": user.club_id,
                 "club_name": user.club.name if user.club else None,
                 "profile_pic": user.profile_pic.url if user.profile_pic else None,
+                "signature": user.signature.url if user.signature else None,
             }
         })
 
@@ -355,4 +357,43 @@ class ProfilePicUploadView(APIView):
         return Response({
             "success": True, 
             "message": "Profile picture removed successfully"
+        })
+
+
+class SignatureUploadView(APIView):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return Response({"success": False, "message": "Unauthorized"}, status=401)
+        
+        file_obj = request.FILES.get('file') or request.FILES.get('signature')
+        if not file_obj:
+            return Response({"success": False, "message": "No signature image provided"}, status=400)
+        
+        user = request.user
+        # Delete old signature file if exists
+        if user.signature:
+            user.signature.delete(save=False)
+        user.signature = file_obj
+        user.save()
+        
+        signature_url = user.signature.url
+        return Response({
+            "success": True, 
+            "message": "Signature updated successfully",
+            "signature": signature_url
+        })
+
+    def delete(self, request):
+        if not request.user.is_authenticated:
+            return Response({"success": False, "message": "Unauthorized"}, status=401)
+        
+        user = request.user
+        if user.signature:
+            user.signature.delete(save=False)
+            user.signature = None
+            user.save()
+            
+        return Response({
+            "success": True, 
+            "message": "Signature removed successfully"
         })

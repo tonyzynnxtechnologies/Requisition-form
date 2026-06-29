@@ -133,6 +133,16 @@ class RequisitionDetailSerializer(serializers.ModelSerializer):
             'items',
             'documents',
             'actions',
+            # Signature snapshots
+            'staff_signature',
+            'staff_sign_name',
+            'staff_signed_at',
+            'hod_signature',
+            'hod_sign_name',
+            'hod_signed_at',
+            'ed_signature',
+            'ed_sign_name',
+            'ed_signed_at',
         ]
 
     def get_id(self, obj):

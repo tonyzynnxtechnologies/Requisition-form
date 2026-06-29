@@ -8,6 +8,7 @@ urlpatterns = [
     path('csrf/', CSRFTokenView.as_view()),
     path('me/', CurrentUserView.as_view()),
     path('profile-pic/', ProfilePicUploadView.as_view()),
+    path('signature/', SignatureUploadView.as_view()),
     path('dashboard/stats/', DashboardStatsView.as_view()),
     path('settings/', SystemSettingsView.as_view()),
 

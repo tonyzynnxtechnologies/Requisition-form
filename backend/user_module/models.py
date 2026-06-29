@@ -45,6 +45,19 @@ class Requisition(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
 
+    # Signature snapshots — captured at the moment of submission/approval
+    staff_signature = models.ImageField(upload_to='req_signatures/', blank=True, null=True)
+    staff_sign_name = models.CharField(max_length=255, blank=True, default='')
+    staff_signed_at = models.DateTimeField(null=True, blank=True)
+
+    hod_signature = models.ImageField(upload_to='req_signatures/', blank=True, null=True)
+    hod_sign_name = models.CharField(max_length=255, blank=True, default='')
+    hod_signed_at = models.DateTimeField(null=True, blank=True)
+
+    ed_signature = models.ImageField(upload_to='req_signatures/', blank=True, null=True)
+    ed_sign_name = models.CharField(max_length=255, blank=True, default='')
+    ed_signed_at = models.DateTimeField(null=True, blank=True)
+
     def __str__(self):
         return f"{self.programme_name} ({self.get_status_display()})"
     

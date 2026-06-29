@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
-import { getRequisitions, getMediaUrl, uploadProfilePic, deleteProfilePic } from '../../services/api';
-import { Pencil, Shield, IdCard, Camera } from 'lucide-react';
+import { getRequisitions, getMediaUrl, uploadProfilePic, deleteProfilePic, uploadSignature, deleteSignature } from '../../services/api';
+import { Pencil, Shield, IdCard, Camera, FileSignature } from 'lucide-react';
 
 const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
   const [mfaEnabled, setMfaEnabled] = useState(true);
   const [authorizedCount, setAuthorizedCount] = useState(0);
-  const [cumulativeBudget, setCumulativeBudget] = useState('₹42.8M');
-  const [avgTat, setAvgTat] = useState('4.2h');
+  const [cumulativeBudget, setCumulativeBudget] = useState('₹0');
+  const [avgTat, setAvgTat] = useState('—');
   const [uploading, setUploading] = useState(false);
+  const [sigUploading, setSigUploading] = useState(false);
   
   // Notification states
   const [highValueEmail, setHighValueEmail] = useState(true);
@@ -61,7 +62,7 @@ const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
         
         // Filter approved requisitions
         const approved = reqs.filter(r => r.status?.toLowerCase() === 'approved');
-        setAuthorizedCount(approved.length > 0 ? approved.length : 1248);
+        setAuthorizedCount(approved.length);
 
         const totalCost = approved.reduce((sum, r) => sum + parseFloat(r.total_estimated_cost || 0), 0);
         if (totalCost > 0) {
@@ -73,11 +74,11 @@ const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
             setCumulativeBudget(`₹${totalCost.toLocaleString('en-IN')}`);
           }
         } else {
-          setCumulativeBudget('₹42.8M');
+          setCumulativeBudget('₹0');
         }
 
-        // Calculate average turnaround time if possible (otherwise fallback to 4.2h)
-        setAvgTat('4.2h');
+        // Average turnaround time — would need action timestamps for accurate calc
+        setAvgTat('—');
       } catch (e) {
         console.error("Error loading metrics:", e);
       }
@@ -89,14 +90,45 @@ const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
     alert('ED Profile editor is in review. Changes are currently disabled.');
   };
 
-  const handleUpdateSignature = () => {
-    alert('Re-verifying and uploading new digital signature sign-off...');
+  const handleSignatureUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setSigUploading(true);
+    try {
+      const res = await uploadSignature(file);
+      if (res.success) {
+        if (onUpdateUser) onUpdateUser({ ...currentUser, signature: res.signature });
+        alert('Signature updated successfully!');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to upload signature.');
+    } finally {
+      setSigUploading(false);
+    }
+  };
+
+  const handleRemoveSignature = async () => {
+    if (!window.confirm('Are you sure you want to remove your signature?')) return;
+    setSigUploading(true);
+    try {
+      const res = await deleteSignature();
+      if (res.success) {
+        if (onUpdateUser) onUpdateUser({ ...currentUser, signature: null });
+        alert('Signature removed successfully!');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to remove signature.');
+    } finally {
+      setSigUploading(false);
+    }
   };
 
   // Get initials for profile badge
   const initials = currentUser?.name 
     ? currentUser.name.split(' ').map(n => n.charAt(0)).join('').toUpperCase() 
-    : 'TK';
+    : 'ED';
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Inter, sans-serif', backgroundColor: '#f8fafc' }}>
@@ -182,7 +214,7 @@ const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
                   <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 'bold', color: '#0f172a' }}>{currentUser?.name || 'Fr. Thomas Kurian'}</h2>
                   <span style={{ fontSize: '10px', backgroundColor: '#e8f5e9', color: '#2e7d32', padding: '2px 8px', borderRadius: '12px', fontWeight: 'bold' }}>EXECUTIVE STATUS</span>
                 </div>
-                <div style={{ color: '#64748b', fontSize: '13.5px', marginTop: '2px' }}>Executive Director | Naipunnya Group of Institutions</div>
+                <div style={{ color: '#64748b', fontSize: '13.5px', marginTop: '2px' }}>Executive Director | Naipunnya School of Management</div>
                 {currentUser?.profile_pic && (
                   <button
                     onClick={handleRemovePhoto}
@@ -271,25 +303,73 @@ const EdProfile = ({ currentUser, onNavigate, onUpdateUser }) => {
               </div>
             </div>
 
-            {/* Digital Authorization */}
+            {/* Digital Signature */}
             <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '600', color: '#0f172a' }}>Digital Authorization</h3>
-                <span style={{ color: '#059669', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }} onClick={handleUpdateSignature}>Update</span>
+                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '600', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <FileSignature size={18} /> Digital Signature
+                </h3>
               </div>
-              <p style={{ color: '#64748b', fontSize: '12.5px', margin: '0 0 16px 0', lineHeight: '1.4' }}>Manage your secure digital sign-off for requisition approvals.</p>
+              <p style={{ color: '#64748b', fontSize: '12.5px', margin: '0 0 16px 0', lineHeight: '1.4' }}>Upload your signature image. This will be automatically attached to requisitions you approve.</p>
               
-              <div style={{ border: '2px dashed #cbd5e1', borderRadius: '8px', padding: '24px', textAlign: 'center', backgroundColor: '#f8fafc', marginBottom: '16px' }}>
-                <div style={{ display: 'inline-block', fontStyle: 'italic', fontFamily: 'Georgia, serif', fontSize: '28px', color: '#0f172a', borderBottom: '1px solid #475569', paddingBottom: '4px', transform: 'rotate(-5deg)' }}>
-                  {currentUser?.name || 'Thomas Kurian'}
-                </div>
-                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '16px' }}>Click to re-verify or change digital signature</div>
-                <div style={{ fontSize: '10px', color: '#cbd5e1', marginTop: '4px' }}>LAST UPDATED: 12 OCT 2023</div>
+              {/* Signature Preview */}
+              <div style={{ border: '2px dashed #cbd5e1', borderRadius: '8px', padding: '24px', textAlign: 'center', backgroundColor: '#f8fafc', marginBottom: '16px', minHeight: '80px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                {sigUploading ? (
+                  <div style={{ color: '#64748b', fontSize: '14px' }}>⏳ Uploading...</div>
+                ) : currentUser?.signature ? (
+                  <img
+                    src={getMediaUrl(currentUser.signature)}
+                    alt="Your Signature"
+                    style={{ maxWidth: '220px', maxHeight: '80px', objectFit: 'contain' }}
+                  />
+                ) : (
+                  <>
+                    <div style={{ display: 'inline-block', fontStyle: 'italic', fontFamily: 'Georgia, serif', fontSize: '28px', color: '#cbd5e1', borderBottom: '1px solid #e2e8f0', paddingBottom: '4px', transform: 'rotate(-5deg)' }}>
+                      {currentUser?.name || 'Your Name'}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '12px' }}>No signature uploaded — click below to upload</div>
+                  </>
+                )}
+              </div>
+
+              {/* Upload / Remove Buttons */}
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
+                <label
+                  htmlFor="ed-signature-upload"
+                  style={{
+                    padding: '8px 16px', backgroundColor: '#064e3b', color: 'white',
+                    border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '500',
+                    cursor: sigUploading ? 'not-allowed' : 'pointer', opacity: sigUploading ? 0.6 : 1,
+                    display: 'inline-block'
+                  }}
+                >
+                  {currentUser?.signature ? 'Replace Signature' : 'Upload Signature'}
+                </label>
+                <input
+                  id="ed-signature-upload"
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg"
+                  onChange={handleSignatureUpload}
+                  style={{ display: 'none' }}
+                  disabled={sigUploading}
+                />
+                {currentUser?.signature && (
+                  <button
+                    onClick={handleRemoveSignature}
+                    disabled={sigUploading}
+                    style={{
+                      background: 'none', border: 'none', color: '#ef4444',
+                      fontSize: '13px', fontWeight: '600', cursor: 'pointer', textDecoration: 'underline'
+                    }}
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
 
               <div style={{ backgroundColor: '#f0fdf4', border: '1px solid #dcfce7', borderRadius: '8px', padding: '12px', display: 'flex', gap: '8px', fontSize: '11.5px', color: '#166534', lineHeight: '1.4' }}>
                 <span style={{ fontSize: '14px' }}><Shield size={20} /></span>
-                <span>All digital sign-offs are encrypted with SHA-256 and time-stamped for institutional auditing.</span>
+                <span>Your signature is securely stored and automatically attached to requisitions upon approval.</span>
               </div>
             </div>
           </div>

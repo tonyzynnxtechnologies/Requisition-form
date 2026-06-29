@@ -2,6 +2,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.utils import timezone
+from django.core.files.base import ContentFile
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -361,6 +362,17 @@ class RequisitionSubmitView(APIView):
 
         requisition.status = new_status
         requisition.submitted_at = requisition.submitted_at or timezone.now()
+
+        # Capture staff signature snapshot
+        if user.signature:
+            # Make a copy of the signature file so it's independent of the user's current signature
+            sig_content = user.signature.read()
+            user.signature.seek(0)  # Reset file pointer
+            sig_name = f'staff_sig_req{requisition.id}_{user.id}.{user.signature.name.split(".")[-1]}'
+            requisition.staff_signature.save(sig_name, ContentFile(sig_content), save=False)
+        requisition.staff_sign_name = user.name
+        requisition.staff_signed_at = timezone.now()
+
         requisition.save()
 
         RequisitionAction.objects.create(
@@ -461,6 +473,30 @@ class RequisitionActionView(APIView):
         requisition.status = new_status
         if action == 'approved_by_hod':
             requisition.priority = serializer.validated_data.get('priority')
+
+        # Capture approver signature snapshot
+        if action == 'approved_by_hod' and user.signature:
+            sig_content = user.signature.read()
+            user.signature.seek(0)
+            sig_name = f'hod_sig_req{requisition.id}_{user.id}.{user.signature.name.split(".")[-1]}'
+            requisition.hod_signature.save(sig_name, ContentFile(sig_content), save=False)
+            requisition.hod_sign_name = user.name
+            requisition.hod_signed_at = timezone.now()
+        elif action == 'approved_by_hod':
+            requisition.hod_sign_name = user.name
+            requisition.hod_signed_at = timezone.now()
+
+        if action == 'approved_by_ed' and user.signature:
+            sig_content = user.signature.read()
+            user.signature.seek(0)
+            sig_name = f'ed_sig_req{requisition.id}_{user.id}.{user.signature.name.split(".")[-1]}'
+            requisition.ed_signature.save(sig_name, ContentFile(sig_content), save=False)
+            requisition.ed_sign_name = user.name
+            requisition.ed_signed_at = timezone.now()
+        elif action == 'approved_by_ed':
+            requisition.ed_sign_name = user.name
+            requisition.ed_signed_at = timezone.now()
+
         requisition.save()
 
         RequisitionAction.objects.create(
@@ -610,3 +646,92 @@ class AuditTrailView(APIView):
             })
 
         return Response({'success': True, 'data': data})
+
+
+class AnnualReportDataView(APIView):
+    """
+    GET /requisitions/annual-report/?year=2025
+    Returns all requisitions for the academic year (June {year} – May {year+1})
+    with items and actions, for generating the annual report.
+    Only accessible by ED and Admin users.
+    """
+
+    def get(self, request):
+        user = request.user
+        role = getattr(user, 'role', None)
+
+        if role not in ('ed', 'admin'):
+            return _error('Only ED and Admin can access the annual report.', status.HTTP_403_FORBIDDEN)
+
+        # Parse academic year from query params (default: current AY)
+        now = timezone.now()
+        current_start_year = now.year if now.month >= 6 else now.year - 1
+        try:
+            start_year = int(request.query_params.get('year', current_start_year))
+        except (ValueError, TypeError):
+            start_year = current_start_year
+
+        from datetime import datetime
+        ay_start = datetime(start_year, 6, 1, tzinfo=timezone.get_current_timezone())
+        ay_end = datetime(start_year + 1, 5, 31, 23, 59, 59, tzinfo=timezone.get_current_timezone())
+
+        # Query all requisitions in this academic year
+        requisitions = Requisition.objects.filter(
+            created_at__gte=ay_start,
+            created_at__lte=ay_end
+        ).select_related('created_by', 'department', 'club').prefetch_related('items', 'actions', 'actions__acted_by', 'documents')
+
+        data = []
+        for req in requisitions:
+            items = []
+            for item in req.items.all():
+                items.append({
+                    'item_name': item.item_name,
+                    'specification': item.specification,
+                    'required_quantity': item.required_quantity,
+                    'estimated_cost': float(item.estimated_cost or 0),
+                })
+
+            actions = []
+            for act in req.actions.all().order_by('acted_at'):
+                actions.append({
+                    'id': act.id,
+                    'action': act.action,
+                    'acted_by_name': act.acted_by.name if act.acted_by else 'System',
+                    'acted_by_role': act.acted_by.role if act.acted_by else '',
+                    'acted_at': act.acted_at.isoformat(),
+                    'comment': act.comment,
+                })
+
+            total_cost = sum((item.estimated_cost or 0) * (item.required_quantity or 0) for item in req.items.all())
+
+            data.append({
+                'id': req.id,
+                'requisition_id': f'REQ-{req.id}',
+                'programme_name': req.programme_name,
+                'requisition_type': req.requisition_type,
+                'status': req.status,
+                'priority': req.priority,
+                'requisition_date': str(req.requisition_date) if req.requisition_date else '',
+                'programme_datetime': req.programme_datetime.isoformat() if req.programme_datetime else '',
+                'created_by_name': req.created_by.name if req.created_by else 'Unknown',
+                'department_name': req.department.name if req.department else '',
+                'club_name': req.club.name if req.club else '',
+                'total_estimated_cost': float(total_cost),
+                'created_at': req.created_at.isoformat(),
+                'submitted_at': req.submitted_at.isoformat() if req.submitted_at else None,
+                'items': items,
+                'actions': actions,
+                'document_count': req.documents.count(),
+                # Signature data
+                'staff_sign_name': req.staff_sign_name,
+                'hod_sign_name': req.hod_sign_name,
+                'ed_sign_name': req.ed_sign_name,
+            })
+
+        return Response({
+            'success': True,
+            'academic_year': f'{start_year}–{str(start_year + 1)[-2:]}',
+            'start_year': start_year,
+            'data': data,
+        })

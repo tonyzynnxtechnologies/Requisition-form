@@ -29,6 +29,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=30, choices=ROLE_CHOICES)
     profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    signature = models.ImageField(upload_to='signatures/', blank=True, null=True)
     club = models.ForeignKey(Club, on_delete=models.SET_NULL, null=True, blank=True)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
